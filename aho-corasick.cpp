@@ -1,7 +1,6 @@
-#include <iostream>
 #include <cstdlib>
-#include <cstring>
 #include <cstdio>
+#include <cstring>
 #include <vector>
 #include <queue>
 
@@ -9,10 +8,10 @@
 
 using namespace std;
 
-void initArrays(int* &f, int** &g, int* &out, int max_states) {
+void initArrays(int* &f, int** &g, long long* &out, int max_states) {
   g = new int*[max_states]; // Go-to function
   f = new int[max_states]; // Fail function
-  out = new int[max_states]; // Output function as a bitwise mask
+  out = new long long[max_states]; // Output function as a bitwise mask
 
   for (int i = 0; i < max_states; i++) {
     out[i] = 0;
@@ -24,7 +23,7 @@ void initArrays(int* &f, int** &g, int* &out, int max_states) {
   }
 }
 
-int buildFSM(vector<char*> words, int* &f, int** &g, int* &out, int max_states) {
+int buildFSM(vector<char*> patterns, int* &f, int** &g, long long* &out, int max_states) {
   int lowestChar = 0;
   int highestChar = ALPHABET_LENGTH;
   int states = 1; // States counter
@@ -36,8 +35,8 @@ int buildFSM(vector<char*> words, int* &f, int** &g, int* &out, int max_states) 
   int currentState;
   int c;
   char* keyword;
-  for (int i = 0; i < words.size(); i++) {
-    keyword = words[i];
+  for (int i = 0; i < patterns.size(); i++) {
+    keyword = patterns[i];
     currentState = 0;
 
     for (int j = 0; j < strlen(keyword); j++) {
@@ -51,7 +50,7 @@ int buildFSM(vector<char*> words, int* &f, int** &g, int* &out, int max_states) 
       currentState = g[currentState][c]; // Keeps following the transition for current pattern
     }
 
-    out[currentState] |= (1 << i); // Updates the bitwise mask
+    out[currentState] |= (((long long) 1) << i); // Updates the bitwise mask
   }
 
   // Creates transitions for characters that are not present on the patterns
@@ -112,7 +111,7 @@ int delta(int* f, int** g, int currentState, char c) {
 }
 
 vector<int>* match(char* text, vector<char*> patterns, int totalPatternsLength) {
-  int* out;
+  long long* out;
   int* f;
   int** g;
 
@@ -155,6 +154,6 @@ int main(){
   //     printf("Pattern %s matches at %d\n", keywords.at(i), matches[i].at(k));
   //   }
   // }
-  
+
   return 0;
 }
