@@ -150,3 +150,4 @@ vector<int>* matchAhoCorasick(char* text, vector<char*> patterns, int totalPatte
 //   // }
 //   return 0;
 // }
+  
