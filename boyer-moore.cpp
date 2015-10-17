@@ -1,9 +1,4 @@
-#include <cstdlib>
-#include <cstdio>
-#include <cstring>
-#include <vector>
-
-#define ALPHABET_LENGTH 256
+#include "boyer-moore.h"
 
 using namespace std;
 
@@ -56,7 +51,7 @@ void initArrays(char* pattern, int* occ, int* f, int* s, int m) {
 
 }
 
-vector<int> match(char* text, char* pattern) {
+vector<int> matchBoyerMoore(char* text, char* pattern) {
   int m = strlen(pattern);
   int n = strlen(text);
 
@@ -90,5 +85,5 @@ vector<int> match(char* text, char* pattern) {
 }
 
 int main() {
-  return 0;
+  // return 0;
 }

@@ -1,10 +1,4 @@
-#include <cstdlib>
-#include <cstdio>
-#include <cstring>
-#include <vector>
-#include <queue>
-
-#define ALPHABET_LENGTH 256
+#include "aho-corasick.h"
 
 using namespace std;
 
@@ -110,7 +104,7 @@ int delta(int* f, int** g, int currentState, char c) {
   return g[next][c];
 }
 
-vector<int>* match(char* text, vector<char*> patterns, int totalPatternsLength) {
+vector<int>* matchAhoCorasick(char* text, vector<char*> patterns, int totalPatternsLength) {
   long long* out;
   int* f;
   int** g;
@@ -147,13 +141,12 @@ int main(){
   // keywords.push_back("hers");
   // char* text = "hersheit";
   //
-  // vector<int>* matches = match(text, keywords, 12);
+  // vector<int>* matches = matchAhoCorasick(text, keywords, 12);
   //
   // for(int i = 0; i < keywords.size(); i++) {
   //   for (int k = 0; k < matches[i].size(); k++) {
   //     printf("Pattern %s matches at %d\n", keywords.at(i), matches[i].at(k));
   //   }
   // }
-
-  return 0;
+  // return 0;
 }
