@@ -1,5 +1,5 @@
-#ifndef AHO_CORASICK
-#define AHO_CORASICK
+#ifndef _AHO_CORASICK
+#define _AHO_CORASICK
 
 #include <cstdlib>
 #include <cstdio>

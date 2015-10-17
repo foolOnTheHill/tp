@@ -84,6 +84,6 @@ vector<int> matchBoyerMoore(char* text, char* pattern) {
   return pos;
 }
 
-int main() {
-  // return 0;
-}
+// int main() {
+//   // return 0;
+// }

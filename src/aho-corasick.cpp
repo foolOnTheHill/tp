@@ -133,20 +133,20 @@ vector<int>* matchAhoCorasick(char* text, vector<char*> patterns, int totalPatte
    return matches;
 }
 
-int main(){
-  // vector<char*> keywords;
-  // keywords.push_back("her");
-  // keywords.push_back("she");
-  // keywords.push_back("it");
-  // keywords.push_back("hers");
-  // char* text = "hersheit";
-  //
-  // vector<int>* matches = matchAhoCorasick(text, keywords, 12);
-  //
-  // for(int i = 0; i < keywords.size(); i++) {
-  //   for (int k = 0; k < matches[i].size(); k++) {
-  //     printf("Pattern %s matches at %d\n", keywords.at(i), matches[i].at(k));
-  //   }
-  // }
-  // return 0;
-}
+// int main(){
+//   // vector<char*> keywords;
+//   // keywords.push_back("her");
+//   // keywords.push_back("she");
+//   // keywords.push_back("it");
+//   // keywords.push_back("hers");
+//   // char* text = "hersheit";
+//   //
+//   // vector<int>* matches = matchAhoCorasick(text, keywords, 12);
+//   //
+//   // for(int i = 0; i < keywords.size(); i++) {
+//   //   for (int k = 0; k < matches[i].size(); k++) {
+//   //     printf("Pattern %s matches at %d\n", keywords.at(i), matches[i].at(k));
+//   //   }
+//   // }
+//   return 0;
+// }
