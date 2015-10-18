@@ -8,6 +8,6 @@
 
 using namespace std;
 
-vector<int> sellers(string pattern, string text, int r);
+vector<int> sellers(string text, string pattern, int r);
 
 #endif
