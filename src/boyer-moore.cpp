@@ -53,7 +53,7 @@ void initArrays(string pattern, int* occ, int* f, int* s, int m) {
 
 vector<int> matchBoyerMoore(string text, string pattern) {
   int m = pattern.length();
-  int n = pattern.length();
+  int n = text.length();
 
   int* occ = new int[ALPHABET_LENGTH]; // Occurrence function for pattern
   int* f = new int[m+1]; // Starting position of the widest border of the suffix of the pattern beginning at position i

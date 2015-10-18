@@ -164,10 +164,10 @@ void match_approximate(vector<string> text_files, vector<string> patterns, int e
 }
 
 void help() {
-	printf("Uso: pmt [options] [pattern] textfile [textfile...]\n");
-	printf("-h, --help\t\tGuia de ajuda\n");
-	printf("-e, --edit d\t\tFaz uma busca aproximada em uma distância máxima 'd'\n");
-	printf("-p, --pattern file\tUtiliza todos os padrões em 'file' como entrada\n");
+	printf("Usage: pmt [options] [pattern] textfile [textfile...]\n");
+	printf("-h, --help\t\tShows this\n");
+	printf("-e, --edit d\t\tMakes an approximate matching using 'd' as maximum distance\n");
+	printf("-p, --pattern file\tMakes the matching using each line in 'file' as a pattern\n");
 
 	exit(0);
 }
