@@ -16,8 +16,8 @@
 using namespace std;
 
 /* Handles wildcards on the file name. */
-vector<char*> getFilesName(char* f) {
-	vector<char*> files;
+vector<string> getFilesName(char* f) {
+	vector<string> files;
 
 	string wildcard(f);
 
@@ -33,7 +33,7 @@ vector<char*> getFilesName(char* f) {
 		ifstream ok(wildcard);
 
 		if (ok.good()) {
-			files.push_back(f);
+			files.push_back(wildcard);
 		} else {
 			printf("Invalid file: '%s'.\n", f);
 		}
@@ -50,7 +50,7 @@ vector<char*> getFilesName(char* f) {
 		while ((ep = readdir(dp))) {
 			string match(ep->d_name);
 			if (match.find(file) != string::npos) {
-				files.push_back(ep->d_name);
+				files.push_back(match);
 			}
 		}
 		closedir(dp);
@@ -61,23 +61,23 @@ vector<char*> getFilesName(char* f) {
 	return files;
 }
 
-void match_boyer_moore(vector<const char*> text_files, const char* pattern) {
+void match_boyer_moore(vector<string> text_files, string pattern) {
 	long long line = 1LL;
 
 	for (unsigned int i = 0; i < text_files.size(); i++) {
-		string text_file(text_files.at(i));
+		string text_file = text_files.at(i);
 
 		ifstream text_stream(text_file);
 
 		if (!text_stream.good()) {
-			printf("Invalid file: '%s'.\n", text_files[i]);
+			printf("Invalid file: '%s'.\n", text_files.at(i).c_str());
 		}
 
 		for(string text; getline(text_stream, text); ) {
-		  vector<int> positions = matchBoyerMoore(text.c_str(), pattern);
+			vector<int> positions = matchBoyerMoore(text, pattern);
 
 			for (int p : positions) {
-				printf("%s:%lld:%d: %s\n", text_files[i], line, p, pattern);
+				printf("%s:%lld:%d: %s\n", text_files[i].c_str(), line, p, pattern.c_str());
 			}
 
 			line = line + 1;
@@ -85,7 +85,7 @@ void match_boyer_moore(vector<const char*> text_files, const char* pattern) {
 	}
 }
 
-void match_aho_corasick(vector<const char*> text_files, vector<const char*> patterns, int total_patterns_length) {
+void match_aho_corasick(vector<string> text_files, vector<string> patterns) {
 	long long line = 1LL;
 
 	// AFD
@@ -93,30 +93,39 @@ void match_aho_corasick(vector<const char*> text_files, vector<const char*> patt
 	int* f;
 	int** g;
 
-	prepareAhoCorasick(patterns, f, g, out, total_patterns_length+1); // Creates the AFD only once
+	int total_patterns_count = 0;
+	unsigned int patterns_count = patterns.size();
+
+	// printf("Padroes: %d\n", patterns_count);
+
+	for (int i = 0; i < patterns_count; i++) {
+		// printf("-- %s\n", patterns.at(i).c_str());
+		total_patterns_count += patterns[i].length();
+	}
+
+	prepareAhoCorasick(patterns, f, g, out, total_patterns_count); // Creates the AFD only once
 
 	for (unsigned int i = 0; i < text_files.size(); i++) {
-		string text_file(text_files.at(i));
+		string text_file = text_files.at(i);
 
 		ifstream text_stream(text_file);
 
 		if (!text_stream.good()) {
-			printf("Invalid file: '%s'.\n", text_files[i]);
+			printf("Invalid file: '%s'.\n", text_files[i].c_str());
 		}
 
-		for(string text; getline(text_stream, text); ) {
-		  vector<int>* positions = matchAhoCorasick(text.c_str(), patterns, f, g, out);
+		for (string text; getline(text_stream, text); ) {
+			vector<int>* positions = matchAhoCorasick(text, patterns, f, g, out);
 
-			for(int i = 0; i < patterns.size(); i++) {
-				for (int k = 0; k < positions[i].size(); k++) {
-					printf("%s:%lld:%d: %s\n", text_files[i], line, positions[i].at(k), patterns[i]);
+			for (unsigned int j = 0; j < patterns_count; j++) {
+				for (unsigned int k = 0; k < positions[j].size(); k++) {
+					printf("%s:%lld:%d: %s\n", t	ext_file.c_str(), line, positions[j].at(k), patterns.at(j).c_str());
 				}
 			}
 
 			line = line + 1;
 		}
 	}
-
 }
 
 void help() {
@@ -134,8 +143,8 @@ int main(int argc, char **argv) {
 
 	int edit_distance = 0;
 	string patterns_file;
-	vector<const char*> patterns;
-	vector<const char*> text_files;
+	vector<string> patterns;
+	vector<string> text_files;
 
 	static struct option long_options[] = {
 			{ "help", no_argument, 0, 'h' },
@@ -148,7 +157,7 @@ int main(int argc, char **argv) {
 	int option_index = 0;
 	int options = 0;
 
-	while ((option = getopt_long(argc, argv, "he:p", long_options, &option_index)) != -1) {
+	while ((option = getopt_long(argc, argv, "he:p:", long_options, &option_index)) != -1) {
 		switch (option) {
 		case 'e':
 			approximate_matching = true;
@@ -185,14 +194,13 @@ int main(int argc, char **argv) {
 		ifstream patterns_stream(patterns_file);
 
 		if (!patterns_stream.good()) {
-			printf("Arquivo inválido: '%s'.\n", patterns_file.c_str());
+			printf("Invalid file: '%s'.\n", patterns_file.c_str());
 		}
 
-		string pattern;
-
-		while (patterns_stream >> pattern) {
-			patterns.push_back(pattern.c_str());
+		for(string text; getline(patterns_stream, text); ) {
+			patterns.push_back(text);
 		}
+
 	}
 
 	if (argc <= options + 1) {
@@ -201,7 +209,7 @@ int main(int argc, char **argv) {
 	}
 
 	for (int i = options + 1; i < argc; i++) {
-		vector<char*> files_name = getFilesName(argv[i]);
+		vector<string> files_name = getFilesName(argv[i]);
 
 		for (unsigned int i = 0; i < files_name.size(); i++) {
 			text_files.push_back(files_name.at(i));
@@ -210,7 +218,9 @@ int main(int argc, char **argv) {
 
 	if (!approximate_matching) {
 		if (patterns.size() == 1) {
-			match_boyer_moore(text_files, patterns[0]);
+			match_boyer_moore(text_files, patterns.at(0));
+		} else {
+			match_aho_corasick(text_files, patterns);
 		}
 	}
 

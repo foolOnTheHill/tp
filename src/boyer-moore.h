@@ -3,13 +3,13 @@
 
 #include <cstdlib>
 #include <cstdio>
-#include <cstring>
+#include <string>
 #include <vector>
 
 #define ALPHABET_LENGTH 256
 
 using namespace std;
 
-vector<int> matchBoyerMoore(const char* text, const char* pattern);
+vector<int> matchBoyerMoore(string text, string pattern);
 
 #endif

@@ -3,7 +3,7 @@
 
 #include <cstdlib>
 #include <cstdio>
-#include <cstring>
+#include <string>
 #include <vector>
 #include <queue>
 
@@ -11,8 +11,8 @@
 
 using namespace std;
 
-void prepareAhoCorasick(vector<const char*> patterns, int* &f, int** &g, long long* &out, int totalPatternsLength);
+void prepareAhoCorasick(vector<string> patterns, int* &f, int** &g, long long* &out, int totalPatternsLength);
 
-vector<int>* matchAhoCorasick(const char* text, vector<const char*> patterns, int* &f, int** &g, long long* &out);
+vector<int>* matchAhoCorasick(string text, vector<string> patterns, int* &f, int** &g, long long* &out);
 
 #endif

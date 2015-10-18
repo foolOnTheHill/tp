@@ -17,7 +17,7 @@ void initArrays(int* &f, int** &g, long long* &out, int max_states) {
   }
 }
 
-int buildFSM(vector<const char*> patterns, int* &f, int** &g, long long* &out, int max_states) {
+int buildFSM(vector<string> patterns, int* &f, int** &g, long long* &out, int max_states) {
   int lowestChar = 0;
   int highestChar = ALPHABET_LENGTH;
   int states = 1; // States counter
@@ -29,10 +29,10 @@ int buildFSM(vector<const char*> patterns, int* &f, int** &g, long long* &out, i
   int currentState;
   int c;
   for (unsigned int i = 0; i < patterns.size(); i++) {
-    const char* keyword = patterns[i];
+    string keyword = patterns[i];
     currentState = 0;
 
-    for (unsigned int j = 0; j < strlen(keyword); j++) {
+    for (unsigned int j = 0; j < keyword.length(); j++) {
       c = keyword[j] - lowestChar;
 
       // Creates a new node for a previously unseen character
@@ -97,7 +97,7 @@ int buildFSM(vector<const char*> patterns, int* &f, int** &g, long long* &out, i
   return states;
 }
 
-void prepareAhoCorasick(vector<const char*> patterns, int* &f, int** &g, long long* &out, int totalPatternsLength) {
+void prepareAhoCorasick(vector<string> patterns, int* &f, int** &g, long long* &out, int totalPatternsLength) {
   buildFSM(patterns, f, g, out, totalPatternsLength+1);
 }
 
@@ -107,9 +107,9 @@ int delta(int* f, int** g, int currentState, char c) {
   return g[next][c];
 }
 
-vector<int>* matchAhoCorasick(const char* text, vector<const char*> patterns, int* &f, int** &g, long long* &out) {
+vector<int>* matchAhoCorasick(string text, vector<string> patterns, int* &f, int** &g, long long* &out) {
   int numPatterns = patterns.size();
-  int n = strlen(text);
+  int n = text.length();
 
   vector<int>* matches = new vector<int>[numPatterns];
 
@@ -121,7 +121,7 @@ vector<int>* matchAhoCorasick(const char* text, vector<const char*> patterns, in
       for (int j = 0; j < numPatterns; ++j) {
         // Matches pattern #j
         if (out[currentState] & (1 << j)) {
-          matches[j].push_back(i - strlen(patterns[j]) + 1);
+          matches[j].push_back(i - patterns[j].length() + 1);
         }
       }
     }

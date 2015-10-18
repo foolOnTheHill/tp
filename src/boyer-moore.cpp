@@ -2,7 +2,7 @@
 
 using namespace std;
 
-void initArrays(const char* pattern, int* occ, int* f, int* s, int m) {
+void initArrays(string pattern, int* occ, int* f, int* s, int m) {
   int i = m;
   int j = m+1;
   int c;
@@ -51,9 +51,9 @@ void initArrays(const char* pattern, int* occ, int* f, int* s, int m) {
 
 }
 
-vector<int> matchBoyerMoore(const char* text, const char* pattern) {
-  int m = strlen(pattern);
-  int n = strlen(text);
+vector<int> matchBoyerMoore(string text, string pattern) {
+  int m = pattern.length();
+  int n = pattern.length();
 
   int* occ = new int[ALPHABET_LENGTH]; // Occurrence function for pattern
   int* f = new int[m+1]; // Starting position of the widest border of the suffix of the pattern beginning at position i
