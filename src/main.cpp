@@ -12,6 +12,8 @@
 
 #include "boyer-moore.h"
 #include "aho-corasick.h"
+#include "sellers.h"
+#include "wu-manber.h"
 
 using namespace std;
 
@@ -119,7 +121,40 @@ void match_aho_corasick(vector<string> text_files, vector<string> patterns) {
 
 			for (unsigned int j = 0; j < patterns_count; j++) {
 				for (unsigned int k = 0; k < positions[j].size(); k++) {
-					printf("%s:%lld:%d: %s\n", t	ext_file.c_str(), line, positions[j].at(k), patterns.at(j).c_str());
+					printf("%s:%lld:%d: %s\n", text_file.c_str(), line, positions[j].at(k), patterns.at(j).c_str());
+				}
+			}
+
+			line = line + 1;
+		}
+	}
+}
+
+void match_approximate(vector<string> text_files, vector<string> patterns, int e) {
+	long long line = 1LL;
+
+	for (unsigned int i = 0; i < text_files.size(); i++) {
+		string text_file = text_files.at(i);
+
+		ifstream text_stream(text_file);
+
+		if (!text_stream.good()) {
+			printf("Invalid file: '%s'.\n", text_files.at(i).c_str());
+		}
+
+		for(string text; getline(text_stream, text); ) {
+
+			for (string &pat : patterns){
+				vector<int> positions;
+
+				if( (e < 10 && pat.length() < 63 ) || (e < 2 && pat.length() > 100) ) {
+					positions = wu_manber(text, pat, e);
+				} else {
+					positions = sellers(text, pat, e);
+				}
+
+				for (int p : positions) {
+					printf("%s:%lld:%d: %s\n", text_files[i].c_str(), line, p, pat.c_str());
 				}
 			}
 
@@ -222,6 +257,8 @@ int main(int argc, char **argv) {
 		} else {
 			match_aho_corasick(text_files, patterns);
 		}
+	} else {
+		match_approximate(text_files, patterns, edit_distance);
 	}
 
 	return 0;
