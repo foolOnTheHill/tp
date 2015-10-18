@@ -29,11 +29,11 @@ int buildFSM(vector<char*> patterns, int* &f, int** &g, long long* &out, int max
   int currentState;
   int c;
   char* keyword;
-  for (int i = 0; i < patterns.size(); i++) {
+  for (unsigned int i = 0; i < patterns.size(); i++) {
     keyword = patterns[i];
     currentState = 0;
 
-    for (int j = 0; j < strlen(keyword); j++) {
+    for (unsigned int j = 0; j < strlen(keyword); j++) {
       c = keyword[j] - lowestChar;
 
       // Creates a new node for a previously unseen character
