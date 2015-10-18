@@ -10,6 +10,6 @@
 
 using namespace std;
 
-vector<int> matchBoyerMoore(char* text, char* pattern);
+vector<int> match_boyer_moore(string text, string pattern);
 
 #endif

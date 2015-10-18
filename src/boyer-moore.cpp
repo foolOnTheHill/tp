@@ -1,8 +1,11 @@
+#include <cstring>
+#include <string>
+
 #include "boyer-moore.h"
 
 using namespace std;
 
-void initArrays(char* pattern, int* occ, int* f, int* s, int m) {
+void initArrays(string pattern, int* occ, int* f, int* s, int m) {
   int i = m;
   int j = m+1;
   int c;
@@ -51,9 +54,9 @@ void initArrays(char* pattern, int* occ, int* f, int* s, int m) {
 
 }
 
-vector<int> matchBoyerMoore(char* text, char* pattern) {
-  int m = strlen(pattern);
-  int n = strlen(text);
+vector<int> match_boyer_moore(string text, string pattern) {
+  int m = pattern.size();
+  int n = text.size();
 
   int* occ = new int[ALPHABET_LENGTH]; // Occurrence function for pattern
   int* f = new int[m+1]; // Starting position of the widest border of the suffix of the pattern beginning at position i
@@ -83,7 +86,3 @@ vector<int> matchBoyerMoore(char* text, char* pattern) {
 
   return pos;
 }
-
-// int main() {
-//   // return 0;
-// }

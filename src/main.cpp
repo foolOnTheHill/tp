@@ -16,8 +16,8 @@
 using namespace std;
 
 /* Handles wildcards on the file name. */
-vector<char*> get_files_name(char* f) {
-	vector<char*> files;
+vector<string> get_files_name(string f) {
+	vector<string> files;
 
 	string wildcard(f);
 
@@ -35,7 +35,7 @@ vector<char*> get_files_name(char* f) {
 		if (ok.good()) {
 			files.push_back(f);
 		} else {
-			printf("Invalid file: '%s' .\n", f);
+			printf("Arquivo inválido: '%s'.\n", f.c_str());
 		}
 
 		return files;
@@ -55,17 +55,40 @@ vector<char*> get_files_name(char* f) {
 		}
 		closedir(dp);
 	} else {
-		printf("Invalid path: '%s' .\n", path.c_str());
+		printf("Caminho inválido: '%s'.\n", path.c_str());
 	}
 
 	return files;
 }
 
+void match_boyer_moore(vector<string> text_files, string pattern) {
+	for (string &text_file : text_files) {
+		long long line = 1LL;
+
+		ifstream text_stream(text_file);
+
+		if (!text_stream.good()) {
+			printf("Arquivo inválido: '%s'.\n", text_file.c_str());
+		}
+
+		for(string text; getline(text_stream, text); )
+		{
+		    vector<int> positions = match_boyer_moore(text, pattern);
+
+			for (int position : positions) {
+				printf("%s:%lld:%d: %s\n", text_file.c_str(), line, position, pattern.c_str());
+			}
+
+			line = line + 1;
+		}
+	}
+}
+
 void help() {
-	printf("Uso: pmt [options] [pattern] textfile [textfile...]");
-	printf("-h, --help\t\tGuia de ajuda");
-	printf("-e, --edit d\t\tFaz uma busca aproximada em uma distância máxima 'd'");
-	printf("-p, --pattern file\tUtiliza todos os padrões em 'file' como entrada");
+	printf("Uso: pmt [options] [pattern] textfile [textfile...]\n");
+	printf("-h, --help\t\tGuia de ajuda\n");
+	printf("-e, --edit d\t\tFaz uma busca aproximada em uma distância máxima 'd'\n");
+	printf("-p, --pattern file\tUtiliza todos os padrões em 'file' como entrada\n");
 
 	exit(0);
 }
@@ -76,14 +99,14 @@ int main(int argc, char **argv) {
 
 	int edit_distance = 0;
 	string patterns_file;
-	vector<char*> pattern_files;
-	vector<char*> text_files;
+	vector<string> patterns;
+	vector<string> text_files;
 
 	static struct option long_options[] = {
-		{ "help", no_argument, 0, 'h' },
-		{ "edit", required_argument, 0, 'e' },
-		{ "pattern", required_argument, 0, 'p' },
-		{ 0, 0, 0, 0 }
+			{ "help", no_argument, 0, 'h' },
+			{ "edit", required_argument, 0, 'e' },
+			{ "pattern", required_argument, 0, 'p' },
+			{ 0, 0, 0, 0 }
 	};
 
 	int option;
@@ -122,18 +145,18 @@ int main(int argc, char **argv) {
 	if (!multi_pattern) {
 		options += 1;
 
-		pattern_files.push_back(argv[options]);
+		patterns.push_back(argv[options]);
 	} else {
 		ifstream patterns_stream(patterns_file);
 
 		if (!patterns_stream.good()) {
-			printf("Arquivo de padrões %s inválido\n", patterns_file.c_str());
+			printf("Arquivo inválido: '%s'.\n", patterns_file.c_str());
 		}
 
-		char* pattern;
+		string pattern;
 
 		while (patterns_stream >> pattern) {
-			pattern_files.push_back(pattern);
+			patterns.push_back(pattern);
 		}
 	}
 
@@ -144,8 +167,16 @@ int main(int argc, char **argv) {
 	}
 
 	for (int i = options + 1; i < argc; i++) {
-		for (char* file_name : get_files_name(argv[i])) {
-			pattern_files.push_back(file_name);
+		vector<string> files_name = get_files_name(argv[i]);
+
+		for (string &file_name : files_name) {
+			text_files.push_back(file_name);
+		}
+	}
+
+	if (!approximate_matching) {
+		if (patterns.size() == 1) {
+			match_boyer_moore(text_files, patterns[0]);
 		}
 	}
 
