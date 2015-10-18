@@ -70,7 +70,7 @@ void match_boyer_moore(vector<const char*> text_files, const char* pattern) {
 		ifstream text_stream(text_file);
 
 		if (!text_stream.good()) {
-			printf("Arquivo inválido: '%s'.\n", text_files[i]);
+			printf("Invalid file: '%s'.\n", text_files[i]);
 		}
 
 		for(string text; getline(text_stream, text); ) {
@@ -83,6 +83,40 @@ void match_boyer_moore(vector<const char*> text_files, const char* pattern) {
 			line = line + 1;
 		}
 	}
+}
+
+void match_aho_corasick(vector<const char*> text_files, vector<const char*> patterns, int total_patterns_length) {
+	long long line = 1LL;
+
+	// AFD
+	long long* out;
+	int* f;
+	int** g;
+
+	prepareAhoCorasick(patterns, f, g, out, total_patterns_length+1); // Creates the AFD only once
+
+	for (unsigned int i = 0; i < text_files.size(); i++) {
+		string text_file(text_files.at(i));
+
+		ifstream text_stream(text_file);
+
+		if (!text_stream.good()) {
+			printf("Invalid file: '%s'.\n", text_files[i]);
+		}
+
+		for(string text; getline(text_stream, text); ) {
+		  vector<int>* positions = matchAhoCorasick(text.c_str(), patterns, f, g, out);
+
+			for(int i = 0; i < patterns.size(); i++) {
+				for (int k = 0; k < positions[i].size(); k++) {
+					printf("%s:%lld:%d: %s\n", text_files[i], line, positions[i].at(k), patterns[i]);
+				}
+			}
+
+			line = line + 1;
+		}
+	}
+
 }
 
 void help() {

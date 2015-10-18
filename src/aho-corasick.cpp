@@ -17,7 +17,7 @@ void initArrays(int* &f, int** &g, long long* &out, int max_states) {
   }
 }
 
-int buildFSM(vector<char*> patterns, int* &f, int** &g, long long* &out, int max_states) {
+int buildFSM(vector<const char*> patterns, int* &f, int** &g, long long* &out, int max_states) {
   int lowestChar = 0;
   int highestChar = ALPHABET_LENGTH;
   int states = 1; // States counter
@@ -28,9 +28,8 @@ int buildFSM(vector<char*> patterns, int* &f, int** &g, long long* &out, int max
   // Go-to function update
   int currentState;
   int c;
-  char* keyword;
   for (unsigned int i = 0; i < patterns.size(); i++) {
-    keyword = patterns[i];
+    const char* keyword = patterns[i];
     currentState = 0;
 
     for (unsigned int j = 0; j < strlen(keyword); j++) {
@@ -98,7 +97,7 @@ int buildFSM(vector<char*> patterns, int* &f, int** &g, long long* &out, int max
   return states;
 }
 
-void prepareAhoCorasick(vector<char*> patterns, int* &f, int** &g, long long* &out, int totalPatternsLength) {
+void prepareAhoCorasick(vector<const char*> patterns, int* &f, int** &g, long long* &out, int totalPatternsLength) {
   buildFSM(patterns, f, g, out, totalPatternsLength+1);
 }
 
@@ -108,7 +107,7 @@ int delta(int* f, int** g, int currentState, char c) {
   return g[next][c];
 }
 
-vector<int>* matchAhoCorasick(char* text, vector<char*> patterns, int* &f, int** &g, long long* &out) {
+vector<int>* matchAhoCorasick(const char* text, vector<const char*> patterns, int* &f, int** &g, long long* &out) {
   int numPatterns = patterns.size();
   int n = strlen(text);
 
@@ -130,21 +129,3 @@ vector<int>* matchAhoCorasick(char* text, vector<char*> patterns, int* &f, int**
 
    return matches;
 }
-
-// int main(){
-//   // vector<char*> keywords;
-//   // keywords.push_back("her");
-//   // keywords.push_back("she");
-//   // keywords.push_back("it");
-//   // keywords.push_back("hers");
-//   // char* text = "hersheit";
-//   //
-//   // vector<int>* matches = matchAhoCorasick(text, keywords, 12);
-//   //
-//   // for(int i = 0; i < keywords.size(); i++) {
-//   //   for (int k = 0; k < matches[i].size(); k++) {
-//   //     printf("Pattern %s matches at %d\n", keywords.at(i), matches[i].at(k));
-//   //   }
-//   // }
-//   return 0;
-// }
