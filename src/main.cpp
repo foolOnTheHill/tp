@@ -16,8 +16,8 @@
 using namespace std;
 
 /* Handles wildcards on the file name. */
-vector<string> get_files_name(string f) {
-	vector<string> files;
+vector<char*> getFilesName(char* f) {
+	vector<char*> files;
 
 	string wildcard(f);
 
@@ -35,7 +35,7 @@ vector<string> get_files_name(string f) {
 		if (ok.good()) {
 			files.push_back(f);
 		} else {
-			printf("Arquivo inválido: '%s'.\n", f.c_str());
+			printf("Invalid file: '%s'.\n", f);
 		}
 
 		return files;
@@ -55,28 +55,29 @@ vector<string> get_files_name(string f) {
 		}
 		closedir(dp);
 	} else {
-		printf("Caminho inválido: '%s'.\n", path.c_str());
+		printf("Invalid path: '%s'.\n", path.c_str());
 	}
 
 	return files;
 }
 
-void match_boyer_moore(vector<string> text_files, string pattern) {
-	for (string &text_file : text_files) {
-		long long line = 1LL;
+void match_boyer_moore(vector<const char*> text_files, const char* pattern) {
+	long long line = 1LL;
+
+	for (unsigned int i = 0; i < text_files.size(); i++) {
+		string text_file(text_files.at(i));
 
 		ifstream text_stream(text_file);
 
 		if (!text_stream.good()) {
-			printf("Arquivo inválido: '%s'.\n", text_file.c_str());
+			printf("Arquivo inválido: '%s'.\n", text_files[i]);
 		}
 
-		for(string text; getline(text_stream, text); )
-		{
-		    vector<int> positions = match_boyer_moore(text, pattern);
+		for(string text; getline(text_stream, text); ) {
+		  vector<int> positions = matchBoyerMoore(text.c_str(), pattern);
 
-			for (int position : positions) {
-				printf("%s:%lld:%d: %s\n", text_file.c_str(), line, position, pattern.c_str());
+			for (int p : positions) {
+				printf("%s:%lld:%d: %s\n", text_files[i], line, p, pattern);
 			}
 
 			line = line + 1;
@@ -99,8 +100,8 @@ int main(int argc, char **argv) {
 
 	int edit_distance = 0;
 	string patterns_file;
-	vector<string> patterns;
-	vector<string> text_files;
+	vector<const char*> patterns;
+	vector<const char*> text_files;
 
 	static struct option long_options[] = {
 			{ "help", no_argument, 0, 'h' },
@@ -118,14 +119,14 @@ int main(int argc, char **argv) {
 		case 'e':
 			approximate_matching = true;
 
-			edit_distance = atoi(optarg);
+			edit_distance = optarg == NULL ? 0 : atoi(optarg);
 			options += 2;
 
 			break;
 		case 'p':
 			multi_pattern = true;
 
-			patterns_file = optarg;
+			patterns_file = optarg == NULL ? "" : optarg;
 			options += 2;
 
 			break;
@@ -156,21 +157,20 @@ int main(int argc, char **argv) {
 		string pattern;
 
 		while (patterns_stream >> pattern) {
-			patterns.push_back(pattern);
+			patterns.push_back(pattern.c_str());
 		}
 	}
 
 	if (argc <= options + 1) {
-		printf("Insira um ou mais arquivos de texto para realizar a busca\n");
-
+		printf("Please, add one or more files in order to search.\n");
 		help();
 	}
 
 	for (int i = options + 1; i < argc; i++) {
-		vector<string> files_name = get_files_name(argv[i]);
+		vector<char*> files_name = getFilesName(argv[i]);
 
-		for (string &file_name : files_name) {
-			text_files.push_back(file_name);
+		for (unsigned int i = 0; i < files_name.size(); i++) {
+			text_files.push_back(files_name.at(i));
 		}
 	}
 
