@@ -11,6 +11,8 @@
 
 using namespace std;
 
+void prepareAhoCorasick(vector<char*> patterns, int* &f, int** &g, long long* &out, int totalPatternsLength);
+
 vector<int>* matchAhoCorasick(char* text, vector<char*> patterns, int totalPatternsLength);
 
 #endif

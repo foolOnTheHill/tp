@@ -98,23 +98,21 @@ int buildFSM(vector<char*> patterns, int* &f, int** &g, long long* &out, int max
   return states;
 }
 
+void prepareAhoCorasick(vector<char*> patterns, int* &f, int** &g, long long* &out, int totalPatternsLength) {
+  buildFSM(patterns, f, g, out, totalPatternsLength+1);
+}
+
 int delta(int* f, int** g, int currentState, char c) {
   int next = currentState;
   while (g[next][c] == -1) next = f[next];
   return g[next][c];
 }
 
-vector<int>* matchAhoCorasick(char* text, vector<char*> patterns, int totalPatternsLength) {
-  long long* out;
-  int* f;
-  int** g;
-
+vector<int>* matchAhoCorasick(char* text, vector<char*> patterns, int* &f, int** &g, long long* &out) {
   int numPatterns = patterns.size();
   int n = strlen(text);
 
   vector<int>* matches = new vector<int>[numPatterns];
-
-  buildFSM(patterns, f, g, out, totalPatternsLength+1);
 
   int currentState = 0;
   for (int i = 0; i < n; ++i) {
@@ -150,4 +148,3 @@ vector<int>* matchAhoCorasick(char* text, vector<char*> patterns, int totalPatte
 //   // }
 //   return 0;
 // }
-  
