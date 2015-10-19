@@ -51,7 +51,7 @@ vector<int> wu_manber(string text, string pattern, int r) {
 		S1 = S[0];
 		S[0] = S[0] << 1 | C[(int)text[j-1]];
 
-		for (int q = 1; q < 3; q++) {
+		for (int q = 1; q < r+1; q++) {
 			S2 = S[q];
 
 			a = S[q] << 1 | C[(int)text[j-1]];
