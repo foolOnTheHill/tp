@@ -12,8 +12,8 @@ int fi(char x, char y) {
 vector<int> sellers(string text, string pattern, int r) {
 	int m = pattern.length();
 	int n = text.length();
-	int S[m+1];
-	int S1[n+1];
+	int S[n+1];
+	int S1[m+1];
 
 	vector<int> occ;
 

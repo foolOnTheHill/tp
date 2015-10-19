@@ -2,14 +2,14 @@
 
 using namespace std;
 
-void initArrays(string pattern, int* occ, int* f, int* s, int m) {
+void initArrays(string pattern, int* &occ, int* &f, int* &s, int m) {
   int i = m;
   int j = m+1;
   int c;
 
   /* Pre-proccessing for Bad Character Heuristics */
-  for (int i = 0; i < ALPHABET_LENGTH; i++) {
-    occ[i] = -1;
+  for (int k = 0; k < ALPHABET_LENGTH; k++) {
+    occ[k] = -1;
   }
 
   for (int k = 0; k < m+1; k++) {
@@ -29,7 +29,7 @@ void initArrays(string pattern, int* occ, int* f, int* s, int m) {
   while (i > 0) {
       while (j <= m && pattern[i-1] != pattern[j-1]) {
         if (s[j] == 0) {
-          s[j] = j-1;
+          s[j] = j-i;
         }
         j = f[j];
       }
