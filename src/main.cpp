@@ -98,10 +98,7 @@ void match_aho_corasick(vector<string> text_files, vector<string> patterns) {
 	int total_patterns_count = 0;
 	unsigned int patterns_count = patterns.size();
 
-	// printf("Padroes: %d\n", patterns_count);
-
 	for (int i = 0; i < patterns_count; i++) {
-		// printf("-- %s\n", patterns.at(i).c_str());
 		total_patterns_count += patterns[i].length();
 	}
 
@@ -143,11 +140,10 @@ void match_approximate(vector<string> text_files, vector<string> patterns, int e
 		}
 
 		for(string text; getline(text_stream, text); ) {
-
 			for (string &pat : patterns){
 				vector<int> positions;
 
-				if( (e < 10 && pat.length() < 63 ) || (e < 2 && pat.length() > 100) ) {
+				if((e < 10 && pat.length() < 63) || (e < 2 && pat.length() > 100)) {
 					positions = wu_manber(text, pat, e);
 				} else {
 					positions = sellers(text, pat, e);
@@ -163,7 +159,7 @@ void match_approximate(vector<string> text_files, vector<string> patterns, int e
 	}
 }
 
-void help() {
+void show_help() {
 	printf("Usage: pmt [options] [pattern] textfile [textfile...]\n");
 	printf("-h, --help\t\tShows this\n");
 	printf("-e, --edit d\t\tMakes an approximate matching using 'd' as maximum distance\n");
@@ -172,7 +168,13 @@ void help() {
 	exit(0);
 }
 
-int main(int argc, char **argv) {
+void show_usage() {
+	printf("Usage: pmt [options] [pattern] textfile [textfile...]\n");
+
+	exit(0);
+}
+
+int main(int argc, char** argv) {
 	bool multi_pattern = false;
 	bool approximate_matching = false;
 
@@ -182,15 +184,15 @@ int main(int argc, char **argv) {
 	vector<string> text_files;
 
 	static struct option long_options[] = {
-			{ "help", no_argument, 0, 'h' },
-			{ "edit", required_argument, 0, 'e' },
-			{ "pattern", required_argument, 0, 'p' },
-			{ 0, 0, 0, 0 }
+		{ "help", no_argument, 0, 'h' },
+		{ "edit", required_argument, 0, 'e' },
+		{ "pattern", required_argument, 0, 'p' },
+		{ 0, 0, 0, 0 }
 	};
 
 	int option;
 	int option_index = 0;
-	int options = 0;
+	int arg_index = 1;
 
 	while ((option = getopt_long(argc, argv, "he:p:", long_options, &option_index)) != -1) {
 		switch (option) {
@@ -198,33 +200,37 @@ int main(int argc, char **argv) {
 			approximate_matching = true;
 
 			edit_distance = optarg == NULL ? 0 : atoi(optarg);
-			options += 2;
+			arg_index = arg_index + 2;
 
 			break;
 		case 'p':
 			multi_pattern = true;
 
 			patterns_file = optarg == NULL ? "" : optarg;
-			options += 2;
+			arg_index = arg_index + 2;
 
 			break;
 		case 'h':
+			show_help();
+
+			break;
 		case '?':
 		default:
-			help();
+			show_usage();
 
 			break;
 		}
 	}
 
-	if (options >= argc || argc == 1) {
-		help();
+	    // evita nenhum parâmetro | evita equívocos na busca de multíplos padrões | evita equívocos na busca simples
+	if (argc == 1 || (arg_index >= argc - 1 && !multi_pattern) || arg_index >= argc - 1) {
+		show_usage();
 	}
 
 	if (!multi_pattern) {
-		options += 1;
+		patterns.push_back(argv[arg_index]);
 
-		patterns.push_back(argv[options]);
+		arg_index = arg_index + 1;
 	} else {
 		ifstream patterns_stream(patterns_file);
 
@@ -235,15 +241,9 @@ int main(int argc, char **argv) {
 		for(string text; getline(patterns_stream, text); ) {
 			patterns.push_back(text);
 		}
-
 	}
 
-	if (argc <= options + 1) {
-		printf("Please, add one or more files in order to search.\n");
-		help();
-	}
-
-	for (int i = options + 1; i < argc; i++) {
+	for (int i = arg_index; i < argc; i++) {
 		vector<string> files_name = getFilesName(argv[i]);
 
 		for (unsigned int i = 0; i < files_name.size(); i++) {
