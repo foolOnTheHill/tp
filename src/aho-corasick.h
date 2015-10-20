@@ -13,6 +13,6 @@ using namespace std;
 
 void prepareAhoCorasick(vector<string> patterns, int* &f, int** &g, long long* &out, int totalPatternsLength);
 
-vector<int>* matchAhoCorasick(string text, vector<string> patterns, int* &f, int** &g, long long* &out);
+vector<int>* matchAhoCorasick(const string text, vector<string> patterns, int* &f, int** &g, long long* &out);
 
 #endif

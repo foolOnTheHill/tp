@@ -2,7 +2,7 @@
 
 using namespace std;
 
-void prepareBoyerMoore(string pattern, int* &occ, int* &f, int* &s) {
+void prepareBoyerMoore(const string pattern, int* &occ, int* &f, int* &s) {
   int m = pattern.length();
 
   int i = m;
@@ -53,7 +53,15 @@ void prepareBoyerMoore(string pattern, int* &occ, int* &f, int* &s) {
 
 }
 
-vector<int> matchBoyerMoore(string text, string pattern, int* occ, int* f, int* s) {
+int max(int a, int b) {
+	if (a > b) {
+		return a;
+	} else {
+    	return b;
+	}
+}
+
+vector<int> matchBoyerMoore(const string text, const string pattern, int* occ, int* f, int* s) {
   int m = pattern.length();
   int n = text.length();
 

@@ -107,7 +107,7 @@ int delta(int* f, int** g, int currentState, char c) {
   return g[next][c];
 }
 
-vector<int>* matchAhoCorasick(string text, vector<string> patterns, int* &f, int** &g, long long* &out) {
+vector<int>* matchAhoCorasick(const string text, vector<string> patterns, int* &f, int** &g, long long* &out) {
   int numPatterns = patterns.size();
   int n = text.length();
 

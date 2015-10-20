@@ -10,8 +10,8 @@
 
 using namespace std;
 
-void prepareBoyerMoore(string pattern, int* &occ, int* &f, int* &s);
+void prepareBoyerMoore(const string pattern, int* &occ, int* &f, int* &s);
 
-vector<int> matchBoyerMoore(string text, string pattern, int* occ, int* f, int* s);
+vector<int> matchBoyerMoore(const string text, const string pattern, int* occ, int* f, int* s);
 
 #endif

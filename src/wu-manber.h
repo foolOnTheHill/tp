@@ -9,6 +9,6 @@
 
 using namespace std;
 
-vector<int> wu_manber(string text, string pattern, int r);
+vector<int> wu_manber(const string text, const string pattern, int r);
 
 #endif

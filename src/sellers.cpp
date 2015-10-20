@@ -9,7 +9,7 @@ int fi(char x, char y) {
 }
 
 
-vector<int> sellers(string text, string pattern, int r) {
+vector<int> sellers(const string text, const string pattern, int r) {
 	int m = pattern.length();
 	int n = text.length();
 	int S[n+1];

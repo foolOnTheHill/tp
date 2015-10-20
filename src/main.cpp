@@ -18,7 +18,7 @@
 using namespace std;
 
 /* Handles wildcards on the file name. */
-vector<string> getFilesName(char* f) {
+vector<string> getFilesName(const char* f) {
 	vector<string> files;
 
 	string wildcard(f);
@@ -63,7 +63,11 @@ vector<string> getFilesName(char* f) {
 	return files;
 }
 
-void match_boyer_moore(vector<string> text_files, string pattern) {
+void print_matching(const string text_file, long long line, int position, const string pattern) {
+	printf("%s:%lld:%d: %s\n", text_file.c_str(), line, position, pattern.c_str());
+}
+
+void match_boyer_moore(vector<string> text_files, const string pattern) {
 	long long line = 1LL;
 
 	int m = pattern.length();
@@ -87,7 +91,7 @@ void match_boyer_moore(vector<string> text_files, string pattern) {
 			vector<int> positions = matchBoyerMoore(text, pattern, occ, f, s);
 
 			for (int p : positions) {
-				printf("%s:%lld:%d: %s\n", text_files[i].c_str(), line, p, pattern.c_str());
+				print_matching(text_files[i], line, p, pattern);
 			}
 
 			line = line + 1;
@@ -126,7 +130,7 @@ void match_aho_corasick(vector<string> text_files, vector<string> patterns) {
 
 			for (unsigned int j = 0; j < patterns_count; j++) {
 				for (unsigned int k = 0; k < positions[j].size(); k++) {
-					printf("%s:%lld:%d: %s\n", text_file.c_str(), line, positions[j].at(k), patterns.at(j).c_str());
+					print_matching(text_file, line, positions[j].at(k), patterns.at(j));
 				}
 			}
 
@@ -158,7 +162,7 @@ void match_approximate(vector<string> text_files, vector<string> patterns, int e
 				}
 
 				for (int p : positions) {
-					printf("%s:%lld:%d: %s\n", text_files[i].c_str(), line, p, pat.c_str());
+					print_matching(text_files[i], line, p, pat);
 				}
 			}
 
@@ -185,6 +189,7 @@ void show_usage() {
 int main(int argc, char** argv) {
 	bool multi_pattern = false;
 	bool approximate_matching = false;
+	bool only_counting = false;
 
 	int edit_distance = 0;
 	string patterns_file;
@@ -195,6 +200,7 @@ int main(int argc, char** argv) {
 		{ "help", no_argument, 0, 'h' },
 		{ "edit", required_argument, 0, 'e' },
 		{ "pattern", required_argument, 0, 'p' },
+		{ "count", no_argument, 0, 'c'},
 		{ 0, 0, 0, 0 }
 	};
 
@@ -202,8 +208,12 @@ int main(int argc, char** argv) {
 	int option_index = 0;
 	int arg_index = 1;
 
-	while ((option = getopt_long(argc, argv, "he:p:", long_options, &option_index)) != -1) {
+	while ((option = getopt_long(argc, argv, "he:p:c", long_options, &option_index)) != -1) {
 		switch (option) {
+		case 'h':
+			show_help();
+
+			break;
 		case 'e':
 			approximate_matching = true;
 
@@ -218,11 +228,10 @@ int main(int argc, char** argv) {
 			arg_index = arg_index + 2;
 
 			break;
-		case 'h':
-			show_help();
+		case 'c':
+			only_counting = true;
 
 			break;
-		case '?':
 		default:
 			show_usage();
 

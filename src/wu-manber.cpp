@@ -1,6 +1,6 @@
 #include "wu-manber.h"
 
-void char_mask(string pattern, long long int *C) {
+void char_mask(const string pattern, long long int *C) {
 	int m = pattern.length();
 
 	int max = 0;
@@ -21,7 +21,7 @@ void char_mask(string pattern, long long int *C) {
 
 }
 
-vector<int> wu_manber(string text, string pattern, int r) {
+vector<int> wu_manber(const string text, const string pattern, int r) {
 	int m = pattern.length();
 	int n = text.length();
 	long long int S[r+1];
@@ -71,5 +71,4 @@ vector<int> wu_manber(string text, string pattern, int r) {
 	}
 
 	return occ;
-
 }
