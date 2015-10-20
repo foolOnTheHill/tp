@@ -231,7 +231,7 @@ int main(int argc, char** argv) {
 	}
 
 	// Checking parameters
-	if (argc == 1 || (arg_index >= argc - 1 && !multi_pattern) || arg_index >= argc - 1) {
+	if (argc <= 2 || (arg_index >= argc - 1 && multi_pattern) || (arg_index >= argc - 1 && approximate_matching)) {
 		show_usage();
 	}
 
