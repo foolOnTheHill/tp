@@ -176,13 +176,12 @@ void show_help() {
 	printf("-h, --help\t\tShows this\n");
 	printf("-e, --edit d\t\tMakes an approximate matching using 'd' as maximum distance\n");
 	printf("-p, --pattern file\tMakes the matching using each line in 'file' as a pattern\n");
-
+	printf("-c, \t\t\tOnly prints how many times the patterns match on each line in 'file'\n");
 	exit(0);
 }
 
 void show_usage() {
 	printf("Usage: pmt [options] [pattern] textfile [textfile...]\n");
-
 	exit(0);
 }
 
@@ -217,14 +216,22 @@ int main(int argc, char** argv) {
 		case 'e':
 			approximate_matching = true;
 
-			edit_distance = optarg == NULL ? 0 : atoi(optarg);
+			if (optarg == NULL) {
+				show_usage();
+			}
+
+			edit_distance = atoi(optarg);
 			arg_index = arg_index + 2;
 
 			break;
 		case 'p':
 			multi_pattern = true;
 
-			patterns_file = optarg == NULL ? "" : optarg;
+			if (optarg == NULL) {
+				show_usage();
+			}
+
+			patterns_file = optarg;
 			arg_index = arg_index + 2;
 
 			break;
@@ -239,8 +246,7 @@ int main(int argc, char** argv) {
 		}
 	}
 
-	// Checking parameters
-	if (argc <= 2 || (arg_index >= argc - 1 && multi_pattern) || (arg_index >= argc - 1 && approximate_matching)) {
+	if (arg_index >= argc) {
 		show_usage();
 	}
 
@@ -260,12 +266,21 @@ int main(int argc, char** argv) {
 		}
 	}
 
+	int qnt_files = 0, tmp;
 	for (int i = arg_index; i < argc; i++) {
 		vector<string> files_name = getFilesName(argv[i]);
 
-		for (unsigned int i = 0; i < files_name.size(); i++) {
+		tmp = files_name.size();
+
+		for (unsigned int i = 0; i < tmp; i++) {
 			text_files.push_back(files_name.at(i));
 		}
+
+		qnt_files += tmp;
+	}
+
+	if (qnt_files == 0) {
+		show_usage();
 	}
 
 	if (!approximate_matching) {
