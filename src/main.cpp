@@ -66,6 +66,14 @@ vector<string> getFilesName(char* f) {
 void match_boyer_moore(vector<string> text_files, string pattern) {
 	long long line = 1LL;
 
+	int m = pattern.length();
+
+	int* occ = new int[ALPHABET_LENGTH]; // Occurrence function for pattern
+	int* f = new int[m+1]; // Starting position of the widest border of the suffix of the pattern beginning at position i
+	int* s = new int[m+1]; // The corresponding shift distance is saved in an array s
+
+	prepareBoyerMoore(pattern, occ, f, s);
+
 	for (unsigned int i = 0; i < text_files.size(); i++) {
 		string text_file = text_files.at(i);
 
@@ -76,7 +84,7 @@ void match_boyer_moore(vector<string> text_files, string pattern) {
 		}
 
 		for(string text; getline(text_stream, text); ) {
-			vector<int> positions = matchBoyerMoore(text, pattern);
+			vector<int> positions = matchBoyerMoore(text, pattern, occ, f, s);
 
 			for (int p : positions) {
 				printf("%s:%lld:%d: %s\n", text_files[i].c_str(), line, p, pattern.c_str());
@@ -222,7 +230,7 @@ int main(int argc, char** argv) {
 		}
 	}
 
-	    // evita nenhum par�metro | evita equ�vocos na busca de mult�plos padr�es | evita equ�vocos na busca simples
+	// Checking parameters
 	if (argc == 1 || (arg_index >= argc - 1 && !multi_pattern) || arg_index >= argc - 1) {
 		show_usage();
 	}

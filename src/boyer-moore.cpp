@@ -2,7 +2,9 @@
 
 using namespace std;
 
-void initArrays(string pattern, int* &occ, int* &f, int* &s, int m) {
+void prepareBoyerMoore(string pattern, int* &occ, int* &f, int* &s) {
+  int m = pattern.length();
+
   int i = m;
   int j = m+1;
   int c;
@@ -51,15 +53,9 @@ void initArrays(string pattern, int* &occ, int* &f, int* &s, int m) {
 
 }
 
-vector<int> matchBoyerMoore(string text, string pattern) {
+vector<int> matchBoyerMoore(string text, string pattern, int* occ, int* f, int* s) {
   int m = pattern.length();
   int n = text.length();
-
-  int* occ = new int[ALPHABET_LENGTH]; // Occurrence function for pattern
-  int* f = new int[m+1]; // Starting position of the widest border of the suffix of the pattern beginning at position i
-  int* s = new int[m+1]; // The corresponding shift distance is saved in an array s
-
-  initArrays(pattern, occ, f, s, m);
 
   int j;
   int i = 0;
