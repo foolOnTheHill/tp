@@ -67,9 +67,11 @@ void print_matching(const string text_file, long long line, int position, const 
 	printf("%s:%lld:%d: %s\n", text_file.c_str(), line, position, pattern.c_str());
 }
 
-void match_boyer_moore(vector<string> text_files, const string pattern) {
-	long long line = 1LL;
+void print_count(const string text_file, long long count, const string pattern) {
+    printf("%s:%lld: %s\n", text_file.c_str(), count, pattern.c_str());
+}
 
+void match_boyer_moore(vector<string> text_files, const string pattern, bool only_counting) {
 	int m = pattern.length();
 
 	int* occ = new int[ALPHABET_LENGTH]; // Occurrence function for pattern
@@ -78,82 +80,115 @@ void match_boyer_moore(vector<string> text_files, const string pattern) {
 
 	prepareBoyerMoore(pattern, occ, f, s);
 
-	for (unsigned int i = 0; i < text_files.size(); i++) {
-		string text_file = text_files.at(i);
+	for (int i = 0, n = text_files.size(); i < n; i++) {
+		long long line = 1LL;
+		long long count = 0LL;
+
+		string text_file = text_files[i];
 
 		ifstream text_stream(text_file);
 
 		if (!text_stream.good()) {
-			printf("Invalid file: '%s'.\n", text_files.at(i).c_str());
+			printf("Invalid file: '%s'.\n", text_file.c_str());
 		}
 
 		for(string text; getline(text_stream, text); ) {
 			vector<int> positions = matchBoyerMoore(text, pattern, occ, f, s);
 
-			for (int p : positions) {
-				print_matching(text_files[i], line, p, pattern);
-			}
+			if (!only_counting) {
+				for (int j = 0, o = positions.size(); j < o; j++) {
+					print_matching(text_file, line, positions[j], pattern);
+				}
 
-			line = line + 1;
+				line = line + 1;
+			} else {
+				count = count + positions.size();
+			}
+		}
+
+		if (only_counting) {
+			print_count(text_file, count, pattern);
 		}
 	}
 }
 
-void match_aho_corasick(vector<string> text_files, vector<string> patterns) {
-	long long line = 1LL;
-
+void match_aho_corasick(vector<string> text_files, vector<string> patterns, bool only_counting) {
 	// AFD
 	long long* out;
 	int* f;
 	int** g;
 
 	int total_patterns_count = 0;
-	unsigned int patterns_count = patterns.size();
+	int pattern_count = patterns.size();
 
-	for (int i = 0; i < patterns_count; i++) {
+	for (int i = 0; i < pattern_count; i++) {
 		total_patterns_count += patterns[i].length();
 	}
 
 	prepareAhoCorasick(patterns, f, g, out, total_patterns_count); // Creates the AFD only once
 
-	for (unsigned int i = 0; i < text_files.size(); i++) {
-		string text_file = text_files.at(i);
+	for (int i = 0, n = text_files.size(); i < n; i++) {
+		long long line = 1LL;
+		long long count[pattern_count];
+
+		fill(count, count + pattern_count, 0LL);
+
+		string text_file = text_files[i];
 
 		ifstream text_stream(text_file);
 
 		if (!text_stream.good()) {
-			printf("Invalid file: '%s'.\n", text_files[i].c_str());
+			printf("Invalid file: '%s'.\n", text_file.c_str());
 		}
 
 		for (string text; getline(text_stream, text); ) {
 			vector<int>* positions = matchAhoCorasick(text, patterns, f, g, out);
 
-			for (unsigned int j = 0; j < patterns_count; j++) {
-				for (unsigned int k = 0; k < positions[j].size(); k++) {
-					print_matching(text_file, line, positions[j].at(k), patterns.at(j));
+			if (!only_counting) {
+				for (int j = 0; j < pattern_count; j++) {
+					for (int k = 0, o = positions[j].size(); k < o; k++) {
+						print_matching(text_file, line, positions[j][k], patterns[j]);
+					}
+				}
+
+				line = line + 1;
+			} else {
+				for (int j = 0; j < pattern_count; j++) {
+					count[j] = count[j] + positions[j].size();
 				}
 			}
+		}
 
-			line = line + 1;
+		if (only_counting) {
+			for (int j = 0; j < pattern_count; j++) {
+				print_count(text_file, count[j], patterns[j]);
+			}
 		}
 	}
 }
 
-void match_approximate(vector<string> text_files, vector<string> patterns, int e) {
-	long long line = 1LL;
+void match_approximate(vector<string> text_files, vector<string> patterns, int e, bool only_counting) {
+    for (int i = 0, n = text_files.size(); i < n; i++) {
+		int pattern_count = patterns.size();
 
-	for (unsigned int i = 0; i < text_files.size(); i++) {
-		string text_file = text_files.at(i);
+		long long line = 1LL;
+		long long count[pattern_count];
+
+		fill(count, count + pattern_count, 0LL);
+
+		string text_file = text_files[i];
 
 		ifstream text_stream(text_file);
 
 		if (!text_stream.good()) {
-			printf("Invalid file: '%s'.\n", text_files.at(i).c_str());
+			printf("Invalid file: '%s'.\n", text_file.c_str());
 		}
 
 		for(string text; getline(text_stream, text); ) {
-			for (string &pat : patterns){
+			for (int j = 0; j < pattern_count; j++){
 				vector<int> positions;
+
+				string pat = patterns[j];
 
 				if((e < 10 && pat.length() < 63) || (e < 2 && pat.length() > 100)) {
 					positions = wu_manber(text, pat, e);
@@ -161,12 +196,24 @@ void match_approximate(vector<string> text_files, vector<string> patterns, int e
 					positions = sellers(text, pat, e);
 				}
 
-				for (int p : positions) {
-					print_matching(text_files[i], line, p, pat);
+				if (!only_counting) {
+					for (int k = 0, o = positions.size(); k < o; k++) {
+						print_matching(text_file, line, positions[k], pat);
+					}
+				} else {
+					count[j] = count[j] + positions.size();
 				}
 			}
 
-			line = line + 1;
+			if (!only_counting) {
+				line = line + 1;
+			}
+		}
+
+		if (only_counting) {
+			for (int j = 0; j < pattern_count; j++) {
+				print_count(text_file, count[j], patterns[j]);
+			}
 		}
 	}
 }
@@ -238,6 +285,8 @@ int main(int argc, char** argv) {
 		case 'c':
 			only_counting = true;
 
+			arg_index += 1;
+
 			break;
 		default:
 			show_usage();
@@ -285,12 +334,12 @@ int main(int argc, char** argv) {
 
 	if (!approximate_matching) {
 		if (patterns.size() == 1) {
-			match_boyer_moore(text_files, patterns.at(0));
+			match_boyer_moore(text_files, patterns[0], only_counting);
 		} else {
-			match_aho_corasick(text_files, patterns);
+			match_aho_corasick(text_files, patterns, only_counting);
 		}
 	} else {
-		match_approximate(text_files, patterns, edit_distance);
+		match_approximate(text_files, patterns, edit_distance, only_counting);
 	}
 
 	return 0;
