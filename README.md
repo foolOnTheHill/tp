@@ -26,6 +26,7 @@ Usage
   - ``-h, --help`` : shows help.
   - ``-e, --edit d`` : makes an approximate matching using 'd' as maximum distance.
   - ``-p, --pattern file`` : makes the matching using each line in 'file' as a pattern.
+  - ``-c`` : only shows how many times the pattern matches in each line.
 
 - We also offer support to wildcards at the textfile parameter.
 
