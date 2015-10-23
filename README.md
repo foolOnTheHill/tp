@@ -30,7 +30,7 @@ Usage
 
 - We also offer support to wildcards at the textfile parameter.
 
-- The output has the following format for each match: ``textfile:line:col pattern``
+- The output has the following format for each match: ``textfile:line:col: pattern``
 
 Authors
 -------
