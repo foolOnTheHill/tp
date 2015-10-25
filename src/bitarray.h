@@ -116,11 +116,16 @@ public:
 	}
 
 	void operator = (const BitArray &b) {
+		if (size != b.size) {
+			delete[] arr;
+			arr = new unsigned long[b.size];
+		}
+
 		size = b.size;
 		bits = b.bits;
 
-		for (int i = 0; i < size; i++) {
-			arr[i] = b.arr[i];
+		for (int i = 0; i < b.size; i++) {
+			this->arr[i] = b.arr[i];
 		}
 	}
 
