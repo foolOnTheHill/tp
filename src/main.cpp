@@ -190,7 +190,7 @@ void match_approximate(vector<string> text_files, vector<string> patterns, int e
 
 				string pat = patterns[j];
 
-				if((e < 10 && pat.length() < 63) || (e < 2 && pat.length() > 100)) {
+				if(e < 10 && pat.length() < 63) {
 					positions = wu_manber(text, pat, e);
 				} else {
 					positions = sellers(text, pat, e);
