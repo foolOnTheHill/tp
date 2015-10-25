@@ -12,12 +12,12 @@ int fi(char x, char y) {
 vector<int> sellers(const string text, const string pattern, int r) {
 	int m = pattern.length();
 	int n = text.length();
-	int S[n+1];
+	int S[m+1];
 	int S1[m+1];
 
 	vector<int> occ;
 
-	for (int i = 0; i < n+1; i++) {
+	for (int i = 0; i < m+1; i++) {
 		S1[i] = i;
 		S[i] = 0;
 	}
