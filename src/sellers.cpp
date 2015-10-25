@@ -36,10 +36,7 @@ vector<int> sellers(const string text, const string pattern, int r) {
 
 		}
 
-		for (int i = 0; i < m+1; i++) {
-			S1[i] = S[i];
-
-		}
+		copy(S, S+m+1, S1);
 
 	}
 
