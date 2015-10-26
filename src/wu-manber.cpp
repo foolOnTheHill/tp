@@ -31,7 +31,6 @@ vector<int> wu_manber(const string text, const string pattern, int r) {
 
 	vector<int> occ;
 
-	int count = 0;
 	long long int msb = 1 << (m-1);
 
 	int max = 0;
@@ -65,8 +64,7 @@ vector<int> wu_manber(const string text, const string pattern, int r) {
 
 		if ((S[r] & msb) == 0) {
 			occ.push_back(j);
-			count++;
-
+			
 		}
 	}
 
