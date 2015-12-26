@@ -1,5 +1,5 @@
-# tp
-Text proccessing course project at CIn - UFPE.
+# pmt
+Pattern Matching Tool. First text proccessing course project at CIn - UFPE.
 
 Description
 -----------
