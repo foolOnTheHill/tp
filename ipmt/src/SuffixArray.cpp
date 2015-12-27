@@ -141,7 +141,51 @@ public:
   }
 
   vector<int> match(string &pattern) {
-    // TODO
+    vector<int> occ;
+
+    int start, end, s, m, e;
+
+    s = 0;
+    e = stringLen-1;
+    while (s < e) {
+      m = (s + e) / 2;
+      if (strncmp(str + SA[m], pattern.c_str(), pattern.size()) >= 0) {
+        e = m;
+      } else {
+        s = m + 1;
+      }
+    }
+    start = s;
+
+    if (strncmp(str + SA[s], pattern.c_str(), pattern.size()) != 0) {
+      return occ;
+    }
+
+    s = 0;
+    e = stringLen-1;
+
+    s = 0;
+    e = stringLen-1;
+    while (s < e) {
+      m = (s + e) / 2;
+      if (strncmp(str + SA[m], pattern.c_str(), pattern.size()) > 0) {
+        e = m;
+      } else {
+        s = m + 1;
+      }
+    }
+
+    if (strncmp(str + SA[s], pattern.c_str(), pattern.size()) > 0) {
+      e--;
+    }
+    end = e;
+
+    for(int i = start; i <= end; i++) {
+      occ.push_back(SA[i]);
+    }
+    sort(occ.begin(), occ.end());
+
+    return occ;
   }
 
 }
