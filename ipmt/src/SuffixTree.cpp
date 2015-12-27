@@ -208,8 +208,69 @@ public:
     loadRepr(buffer);
   }
 
-  vector<int> match(string &pat) {
-    // TODO
+  void matchAux(int nodeId, int currentSuffixSize, vector<int> &occ) {
+    if(outEdges[nodeId].size() == 0){
+    	occ.push_back(stringLen - currentSuffixSize);
+    }
+
+    list<char> &currentNodeEdges = outEdges[nodeId];
+
+    list<char>::iterator it;
+    for(it = currentNodeEdges.begin(); it != currentNodeEdges.end(); it++){
+    	Edge edge = edges[edgesMap[make_pair(nodeId, *it)]];
+    	int span = edge.r - edge.l + 1;
+    	if(edge.r == stringLen) span--;
+    	matchAux(edge.noFinal, currentSuffixSize + span, occ);
+    }
+  }
+
+  vector<int> match(string &pattern) {
+    vector<int> occ;
+
+    Edge edge;
+
+    int patternPos = 0;
+    int currentSuffixSize = 0;
+    int currentNode = root.id;
+
+    bool searching = true;
+
+    if(pattern.size() == 0) return occ;
+
+    while(searching) {
+    	bool found = true;
+
+      if(edgesMap.count(make_pair(currentNode, pattern[patternPos])) > 0) {
+    		edge = edges[edgesMap[make_pair(currentNode, pattern[patternPos])]];
+    	} else {
+    		break;
+    	}
+
+    	for(int textPos = edge.l ; textPos <= edge.r && textPos < stringLen && patternPos < (int) pattern.size(); ++textPos , ++patternPos) {
+        if(pattern[patternPos] != str[textPos]) {
+    			found = false;
+    			break;
+    		}
+    	}
+
+    	if(found) {
+    		currentSuffixSize += edge.r - edge.l + 1;
+
+    		if(edge.r == stringLen) currentSuffixSize--;
+
+    		if(patternPos == (int) pattern.size()) {
+    			matchAux(edge.endNode, currentSuffixSize, occ);
+    			searching = false;
+    		}
+
+    		currentNode = edge.endNode;
+    	} else {
+    		searching = false;
+    	}
+    }
+
+    sort(occ.begin(), occ.end());
+    return occ;
   }
 
 }
