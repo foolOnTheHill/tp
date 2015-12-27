@@ -100,8 +100,37 @@ void decompress(string &comp_text, string &ret) {
   }
 }
 
+void getIndexFileName(string &textfile, string &indexfile) {
+  int id = textfile.rfind(".");
+  indexfile = textfile.substr(0, id);
+  indexfile += ".idx";
+}
+
+void generateIndexTree(string &textfile) {
+  string input, treeRepr, indexRepr, encoding, indexFileName;
+
+  read(textfile, input);
+
+  SuffixTree tree(input);
+  tree.getRepr(treeRepr);
+
+  ostringstream os;
+  os << input.size() << '\n';
+  os << treeRepr.size() << '\n';
+  os << input;
+  os << treeRepr;
+  indexRepr = os.str();
+
+  compress(indexRepr, encoding);
+
+  getIndexFileName(textfile, indexFileName);
+
+  output(indexFileName, encoding);
+  printf("Created suffix tree index file '%s' for input file '%s'.", indexFileName, textfile);
+  exit(0);
+}
+
 // TODO
-void generateIndexTree(string &textfile);
 void generateIndexArray(string &textfile);
 
 void match(vector<string> &patterns, string &textfile);
