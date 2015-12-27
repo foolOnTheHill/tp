@@ -15,7 +15,7 @@ using namespace std;
 
 void generateIndexTree(string &textfile);
 void generateIndexArray(string &textfile);
-void match(vector<string> &patterns, string &textfile);
+void match(vector<string> &patterns, string &textfile, bool onlyCount);
 
 void compress(const string &text, string &ret);
 void decompress(string &comp_text, string &ret);

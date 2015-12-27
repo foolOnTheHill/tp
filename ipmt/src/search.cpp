@@ -4,7 +4,7 @@ void read(string &filename, string &input) {
   ifstream ifs(filename);
 
   if (!ifs.good()) {
-    printf("Invalid pattern file '%s'!", filename);
+    printf("Invalid pattern file '%s'!", filename.c_str());
     exit(1);
   }
 
@@ -126,7 +126,7 @@ void generateIndexTree(string &textfile) {
   getIndexFileName(textfile, indexFileName);
 
   output(indexFileName, encoding);
-  printf("Created suffix tree index file '%s' for input file '%s'.", indexFileName, textfile);
+  printf("Created suffix tree index file '%s' for input file '%s'.", indexFileName.c_str(), textfile.c_str());
   exit(0);
 }
 
@@ -150,9 +150,86 @@ void generateIndexArray(string &textfile) {
   getIndexFileName(textfile, indexFileName);
 
   output(indexFileName, encoding);
-  printf("Created suffix array index file '%s' for input file '%s'.", indexFileName, textfile);
+  printf("Created suffix array index file '%s' for input file '%s'.", indexFileName.c_str(), textfile.c_str());
   exit(0);
 }
 
-// TODO
-void match(vector<string> &patterns, string &textfile);
+void recoverFromIndex(string &input, string &text, string &repr, char &dataStructure) {
+  int textSize, size;
+  char isArray = false;
+
+  char * buffer = const_cast<char*> (input.c_str() );
+  sscanf(buffer, "%d", &textSize);
+
+  char *pch = strchr(buffer, '\n');
+  buffer = pch+1;
+  sscanf(buffer, "%d", &size);
+
+  if(size < 0){
+    size = -size;
+    isArray = true;
+  }
+
+  pch = strchr(buffer, '\n');
+  buffer = pch+1;
+
+  char *content = new char[textSize+1];
+  memcpy(content, buffer, textSize);
+
+  content[textSize] = '\0';
+  text = content;
+
+  buffer = buffer + textSize;
+  char *structure = new char[size+1];
+  memcpy(structure, buffer, size);
+
+  structure[size] = '\0';
+  repr = structure;
+
+  if (isArray) {
+    dataStructure = 'A';
+  } else {
+    dataStructure = 'T';
+  }
+}
+
+void printCount(string &textfile, string &pattern, vector<int> occ) {
+  printf("%s: %d occurences for '%s'\n", textfile.c_str(), occ.size(), pattern.c_str());
+}
+
+void printMatching(string &textfile, string &pattern, vector<int> occ) {
+  for (int j = 0, o = positions.size(); j < o; j++) {
+    printf("%s:%d: %s\n", textfile.c_str(), occ[j], pattern.c_str());
+  }
+}
+
+void printOccurences(string &textfile, string &pattern, vector<int> occ, bool onlyCount) {
+  if (onlyCount) {
+    printCount(textfile, pattern, occ);
+  } else {
+    printMatching(textfile, pattern, occ);
+  }
+}
+
+void match(vector<string> &patterns, string &textfile, bool onlyCount) {
+  string encoding, input, text, repr;
+  char structure;
+
+  read(textfile, encoding);
+  decompress(encoding, input);
+  recoverFromIndex(input, text, repr, structure);
+
+  if (structure == 'A') {
+    SuffixArray array(text, repr);
+    for (string &p : patterns) {
+      vector<int> occ = array.match(p);
+      printOccurences(textfile, p, occ);
+    }
+  } else {
+    SuffixTree tree(text, repr);
+    for (string &p : patterns) {
+      vector<int> occ = tree.match(p);
+      printOccurences(textfile, p, occ);
+    }
+  }
+}
