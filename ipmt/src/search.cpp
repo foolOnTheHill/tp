@@ -61,9 +61,46 @@ void compress(const string &text, string &ret) {
 	ret = os.str();
 }
 
-// TODO
-void decompress(string &comp_text, string &ret);
+void decompress(string &comp_text, string &ret) {
+  vector<int> encode;
 
+	int tmp;
+	stringstream ss(comp_text);
+	while ( ss >> tmp ) {
+		encode.push_back(tmp);
+	}
+
+  map<int, string> dict;
+  for (int i = 0; i < ALPHABET_SIZE; i++) {
+    dict[i] = string(1, i);
+  }
+
+  int prev, curr;
+  string ipt, aux;
+
+  prev = encode[0];
+  ret = dict[prev];
+  aux = ret;
+
+  for (int i = 1; i < encode.size(); i++) {
+    curr = encode[i];
+
+    if (dict.count(curr)) {
+      ipt = dict[curr];
+    } else {
+      ipt = aux + aux[0];
+    }
+    ret += ipt;
+
+    int s = dict.size() + 1;
+    dict[s] = aux + ipt[0];
+
+    prev = curr;
+    aux = ipt;
+  }
+}
+
+// TODO
 void generateIndexTree(string &textfile);
 void generateIndexArray(string &textfile);
 
