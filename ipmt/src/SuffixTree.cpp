@@ -62,7 +62,7 @@ public:
   pair<bool, int> testAndSplit(Suffix sf, int p) {
     if(sf.l <= sf.r){
       int edgeIndex = edgesMap[make_pair(sf.node, str[sf.l])];
-      Edge edge = edgesArr[edgeIndex];
+      Edge edge = edges[edgeIndex];
 
       if(str[edge.l + (sf.r - sf.l) + 1] == str[p]){
         return make_pair(true, edge.startNode);
@@ -76,7 +76,7 @@ public:
         newEdge = Edge(edge.l, edge.l + (sf.r - sf.l), sf.node, newNode.id);
         insertEdge(newEdge);
 
-        nodesArr[newNode.id].suffixLink = sf.node;
+        nodes[newNode.id].suffixLink = sf.node;
 
         newEdge =  Edge(edge.l + (sf.r - sf.l ) + 1, edge.r, newNode.id, edge.endNode);
         insertEdge(newEdge);
@@ -85,9 +85,9 @@ public:
       }
     } else {
       if(edgesMap.count(make_pair(sf.node, str[p])) > 0){
-        return make_pair( true, sf.node);
+        return make_pair(true, sf.node);
       } else {
-        return make_pair( false, sf.node);
+        return make_pair(false, sf.node);
       }
     }
   }
