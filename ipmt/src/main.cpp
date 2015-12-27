@@ -50,9 +50,7 @@ vector<string> getFilesName(const char* f) {
 
 void show_help() {
   printf("Indexed Pattern Matching Tool - ipmt\n\n");
-	printf("Usage:\n");
-  printf("\tipmt index textfile\n");
-  printf("\tipmt [options] [pattern] textfile [textfile...]\n\n");
+  show_usage();
   printf("Options:\n");
 	printf("\t-h, --help\t\tShows this\n");
   printf("\t-a, --array\tIndexes the file using a Suffix Array\n");
@@ -61,7 +59,127 @@ void show_help() {
 	exit(0);
 }
 
+void show_usage() {
+  printf("Usage:\n");
+  printf("\tipmt index textfile\n");
+  printf("\tipmt [options] [pattern] textfile [textfile...]\n\n");
+}
+
 int main(int argc, char** argv) {
+  bool multi_pattern = false;
+  bool only_counting = false;
+  bool index;
+  bool array;
+
+  string patterns_file;
+  vector<string> patterns;
+  vector<string> text_files;
+
+  static struct option long_options[] = {
+		{ "help", no_argument, 0, 'h' },
+		{ "pattern", required_argument, 0, 'p' },
+		{ "count", no_argument, 0, 'c'},
+    { "array", no_argument, 0, 'a'},
+    { 0, 0, 0, 0 }
+	};
+
+  if (argc < 3) {
+    show_help();
+  }
+
+  if (strcmp(argv[1], "search")) {
+    index = false;
+  } else if (strcmp(argv[1], "index")) {
+    index = true;
+  } else {
+    show_help();
+  }
+
+  int option;
+  int option_index = 0;
+  int arg_index = 1;
+
+  while ((option = getopt_long(argc, argv, "hp:c:a", long_options, &option_index)) != -1) {
+    switch(option) {
+    case 'h':
+      show_help();
+      break;
+    case 'p':
+      if (index) {
+        show_usage();
+      }
+      multi_pattern = true;
+      if (optarg == NULL) {
+        show_usage();
+      }
+      patterns_file = optarg;
+      arg_index += 2;
+      break;
+    case 'c':
+      if (index) {
+        show_usage();
+      }
+      only_counting = true;
+      arg_index += 1;
+      break;
+    case 'a':
+      array = true;
+      arg_index += 1;
+      break;
+  }
+    default:
+      show_help();
+      break;
+    }
+
+  if (arg_index >= argc) {
+    show_usage();
+  }
+
+  if (index) {
+    string input_file(argv[arg_index]);
+    if (array) {
+      generateIndexArray(input_file);
+    } else {
+      generateIndexTree(input_file);
+    }
+  } else {
+    if (!multi_pattern) {
+      patterns.push_back(argv[arg_index]);
+      arg_index = arg_index + 1;
+    } else {
+      ifstream patterns_stream(patterns_file);
+
+      if (!patterns_stream.good()) {
+        printf("Invalid file: '%s'.\n", patterns_file.c_str());
+      }
+
+      for(string text; getline(patterns_stream, text); ) {
+        patterns.push_back(text);
+      }
+    }
+
+    int qnt_files = 0, tmp;
+    for (int i = arg_index; i < argc; i++) {
+      vector<string> files_name = getFilesName(argv[i]);
+
+      tmp = files_name.size();
+
+      for (unsigned int i = 0; i < tmp; i++) {
+        text_files.push_back(files_name.at(i));
+      }
+
+      qnt_files += tmp;
+    }
+
+    if (qnt_files == 0) {
+      show_usage();
+    }
+
+    for (string &tf : text_files) {
+      match(patterns, tf, only_counting);
+    }
+  }
 
   return 0;
 }
