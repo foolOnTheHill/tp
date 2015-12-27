@@ -108,7 +108,7 @@ public:
     buffer = os.str();
   }
 
-  void loadRep(string &buffer) {
+  void loadRepr(string &buffer) {
     stringstream ss(buffer);
 
     ss >> stringLen;
@@ -128,7 +128,7 @@ public:
 
   SuffixArray(string &word, string &buffer) {
     init(word);
-    loadRep(buffer);
+    loadRepr(buffer);
   }
 
   ~SuffixArray() {
