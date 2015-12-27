@@ -130,7 +130,29 @@ void generateIndexTree(string &textfile) {
   exit(0);
 }
 
-// TODO
-void generateIndexArray(string &textfile);
+void generateIndexArray(string &textfile) {
+  string input, arrayRepr, indexRepr, encoding, indexFileName;
 
+  read(textfile, input);
+
+  SuffixArray array(input);
+  array.getRepr(arrayRepr);
+
+  ostringstream os;
+  os << input.size() << '\n';
+  os << (-1) * ((int) arrayRepr.size()) << '\n';
+  os << input;
+  os << arrayRepr;
+  indexRepr = os.str();
+
+  compress(indexRepr, encoding);
+
+  getIndexFileName(textfile, indexFileName);
+
+  output(indexFileName, encoding);
+  printf("Created suffix array index file '%s' for input file '%s'.", indexFileName, textfile);
+  exit(0);
+}
+
+// TODO
 void match(vector<string> &patterns, string &textfile);
