@@ -64,7 +64,40 @@ public:
   }
 
   Suffix update(Suffix sf, int p) {
-    // TODO
+    pair<bool, int> ret = testAndSplit(sf, p);
+
+    bool isTerm = ret.first;
+    int word1 = ret.second, word2 = -1;
+
+    while(!isTerm){
+      Node node(count++, sf.node);
+      insertNode( node );
+
+      Edge edge(p, stringLen, word1, node.id);
+      addEdge(edge);
+
+      if(word2 != -1){
+        nodes[word2].suffixLink = word1;
+      }
+      word2 = word1;
+
+      if(sf.node == root.id){
+        sf.l++;
+      } else {
+        sf.node = nodes[sf.node].suffixLink;
+      }
+
+      sf = canonize(Suffix(sf.node, sf.l, sf.r));
+      ret = testAndSplit(sf, p);
+      isTerm = ret.first;
+      word1 = ret.second;
+    }
+
+    if(word2 != root.id){
+      nodes[word2].suffixLink = word1;
+    }
+    sf.r++;
+    return sf;
   }
 
   void prepareOutEdges() {
