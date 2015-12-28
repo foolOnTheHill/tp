@@ -58,9 +58,9 @@ void show_help() {
   printf("Indexed Pattern Matching Tool - ipmt\n\n");
   show_usage();
   printf("Options:\n");
-	printf("\t-h, --help\t\tShows this\n");
+	printf("\t-h, --help\tShows this\n");
   printf("\t-a, --array\tIndexes the file using a Suffix Array\n");
-	printf("\t-p, --pattern file\tMakes the matching using each line in 'file' as a pattern\n");
+	printf("\t-p, --pattern \tMakes the matching using each line in 'file' as a pattern\n");
 	printf("\t-c, --count\tOnly prints how many times the patterns matches\n");
 	exit(0);
 }
@@ -69,7 +69,7 @@ int main(int argc, char** argv) {
   bool multi_pattern = false;
   bool only_counting = false;
   bool index;
-  bool array;
+  bool array = false;
 
   string patterns_file;
   vector<string> patterns;
@@ -83,21 +83,23 @@ int main(int argc, char** argv) {
     { 0, 0, 0, 0 }
 	};
 
-  if (argc < 3) {
-    show_help();
-  }
+	if (argc < 1) {
+		show_help();
+	}
 
-  if (strcmp(argv[1], "search")) {
+  if (strcmp(argv[1], "search") == 0) {
+		// printf("Search mode\n");
     index = false;
-  } else if (strcmp(argv[1], "index")) {
-    index = true;
+  } else if (strcmp(argv[1], "index") == 0) {
+		// printf("Index mode\n");
+		index = true;
   } else {
     show_help();
   }
 
   int option;
   int option_index = 0;
-  int arg_index = 1;
+  int arg_index = 2;
 
   while ((option = getopt_long(argc, argv, "hp:c:a", long_options, &option_index)) != -1) {
     switch(option) {
@@ -138,16 +140,20 @@ int main(int argc, char** argv) {
   }
 
   if (index) {
+		// printf("File to index %s\n", argv[arg_index]);
     string input_file(argv[arg_index]);
     if (array) {
+			// printf("Using suffix array.\n");
       generateIndexArray(input_file);
     } else {
+			// printf("Using suffix tree.\n");
       generateIndexTree(input_file);
     }
   } else {
     if (!multi_pattern) {
-      patterns.push_back(argv[arg_index]);
-      arg_index = arg_index + 1;
+			// printf("Single pattern %s\n", argv[arg_index]);
+			patterns.push_back(argv[arg_index]);
+      arg_index += 1;
     } else {
       ifstream patterns_stream(patterns_file);
 
@@ -178,6 +184,7 @@ int main(int argc, char** argv) {
     }
 
     for (string &tf : text_files) {
+			// printf("Searching on text file %s\n", tf.c_str());
       match(patterns, tf, only_counting);
     }
   }

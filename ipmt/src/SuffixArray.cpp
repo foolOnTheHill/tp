@@ -76,11 +76,12 @@ public:
   }
 
   void init(string &word) {
+    // printf("Initializing some variables.\n");
+
     stringLen = word.size();
     arraySize = (2 * stringLen) + 400;
 
-    strncpy(str, word.c_str(), stringLen);
-
+    // printf("Creating the arrays.\n");
     RA = new int[arraySize];
     SA = new int[arraySize];
     tmpRA = new int[arraySize];
@@ -88,6 +89,10 @@ public:
     count = new int[arraySize];
     str = new char[arraySize];
 
+    // printf("Copying the string.\n");
+    strncpy(str, word.c_str(), stringLen);
+
+    // printf("Initializing the arrays.\n");
     memset(RA,0, arraySize * sizeof(int));
     memset(SA,0, arraySize * sizeof(int));
     memset(tmpRA,0, arraySize * sizeof(int));
@@ -122,6 +127,7 @@ public:
   }
 
   SuffixArray(string &word) {
+    // printf("Creating the Suffix Array.\n");
     init(word);
     prepareSA();
   }

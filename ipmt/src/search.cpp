@@ -1,6 +1,8 @@
 #include "search.h"
 
 void read(string &filename, string &input) {
+  // printf("Reading from file\n");
+
   ifstream ifs(filename.c_str());
 
   if (!ifs.good()) {
@@ -15,6 +17,8 @@ void read(string &filename, string &input) {
   }
 
   input = input.substr(0, input.length()-1);
+
+  // printf("Finished reading.\n");
 }
 
 void output(string &filename, string &output) {
@@ -111,9 +115,12 @@ void generateIndexTree(string &textfile) {
 
   read(textfile, input);
 
+  // printf("Creating tree.\n");
   SuffixTree tree(input);
+  // printf("Getting representation.\n");
   tree.getRepr(treeRepr);
 
+  // printf("Preparing bytes\n");
   ostringstream os;
   os << input.size() << '\n';
   os << treeRepr.size() << '\n';
@@ -121,12 +128,14 @@ void generateIndexTree(string &textfile) {
   os << treeRepr;
   indexRepr = os.str();
 
+  // printf("Compressing.\n");
   compress(indexRepr, encoding);
 
   getIndexFileName(textfile, indexFileName);
 
+  // printf("Saving.\n");
   output(indexFileName, encoding);
-  printf("Created suffix tree index file '%s' for input file '%s'.", indexFileName.c_str(), textfile.c_str());
+  printf("Created suffix tree index file '%s' for input file '%s'.\n", indexFileName.c_str(), textfile.c_str());
   exit(0);
 }
 
@@ -135,7 +144,10 @@ void generateIndexArray(string &textfile) {
 
   read(textfile, input);
 
+  // printf("Preparing encoding\n");
+
   SuffixArray array(input);
+
   array.getRepr(arrayRepr);
 
   ostringstream os;
@@ -150,7 +162,7 @@ void generateIndexArray(string &textfile) {
   getIndexFileName(textfile, indexFileName);
 
   output(indexFileName, encoding);
-  printf("Created suffix array index file '%s' for input file '%s'.", indexFileName.c_str(), textfile.c_str());
+  printf("Created suffix array index file '%s' for input file '%s'.\n", indexFileName.c_str(), textfile.c_str());
   exit(0);
 }
 
@@ -198,6 +210,8 @@ void printCount(string &textfile, string &pattern, vector<int> occ) {
 }
 
 void printMatching(string &textfile, string &pattern, vector<int> occ) {
+  // printf("Printing matches.\n");
+  // printf("%lu\n", occ.size());
   for (int j = 0, o = occ.size(); j < o; j++) {
     printf("%s:%d: %s\n", textfile.c_str(), occ[j], pattern.c_str());
   }
@@ -215,17 +229,22 @@ void match(vector<string> &patterns, string &textfile, bool onlyCount) {
   string encoding, input, text, repr;
   char structure;
 
+  // printf("Reading index file.\n");
   read(textfile, encoding);
+  // printf("Decompressing.\n");
   decompress(encoding, input);
+  // printf("Recovering original data.\n");
   recoverFromIndex(input, text, repr, structure);
 
   if (structure == 'A') {
+    // printf("Using a suffix array.\n");
     SuffixArray array(text, repr);
     for (string &p : patterns) {
       vector<int> occ = array.match(p);
       printOccurences(textfile, p, occ, onlyCount);
     }
   } else {
+    // printf("Using a suffix tree.\n");
     SuffixTree tree(text, repr);
     for (string &p : patterns) {
       vector<int> occ = tree.match(p);
