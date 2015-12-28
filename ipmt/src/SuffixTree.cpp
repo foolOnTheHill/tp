@@ -10,18 +10,18 @@ public:
 
   struct Edge {
     int l, r, startNode, endNode;
-    Edge(int ll, int rr, int sn, int en): l(ll), r(rr), startNode(sn), endNode(en) {}
-  }
+    Edge(int ll = 0, int rr = 0, int sn = -1, int en = -1): l(ll), r(rr), startNode(sn), endNode(en) {}
+  };
 
   struct Node {
     int id, suffixLink;
-    Node(int i, int sf): id(i), suffixLink(sf) {}
-  }
+    Node(int i = -1, int sf = -1): id(i), suffixLink(sf) {}
+  };
 
   struct Suffix {
     int node, suffixPos, l, r;
-    Suffix(int n, int ll, int rr): node(n), l(ll), r(rr) {}
-  }
+    Suffix(int n = -1, int ll = -1, int rr = -1): node(n), l(ll), r(rr) {}
+  };
 
   Node root;
   Node *nodes;
@@ -32,11 +32,11 @@ public:
   int count;
   int stringLen;
 
-  void addNode(Node *node) {
+  void addNode(Node &node) {
     nodes[node.id] = node;
   }
 
-  void addEdge(Edge *edge) {
+  void addEdge(Edge &edge) {
     edges[edge.endNode] = edge;
     edgesMap[make_pair(edge.startNode, str[edge.l])] = edge.endNode;
   }
@@ -67,19 +67,19 @@ public:
       if(str[edge.l + (sf.r - sf.l) + 1] == str[p]){
         return make_pair(true, edge.startNode);
       } else {
-        Node newNode(nodeCount++, sf.node);
-        insertNode(newNode);
+        Node newNode(count++, sf.node);
+        addNode(newNode);
 
         edgesMap.erase(make_pair(edge.startNode, str[edge.l]));
 
         Edge newEdge;
         newEdge = Edge(edge.l, edge.l + (sf.r - sf.l), sf.node, newNode.id);
-        insertEdge(newEdge);
+        addEdge(newEdge);
 
         nodes[newNode.id].suffixLink = sf.node;
 
         newEdge =  Edge(edge.l + (sf.r - sf.l ) + 1, edge.r, newNode.id, edge.endNode);
-        insertEdge(newEdge);
+        addEdge(newEdge);
 
         return make_pair(false, newNode.id);
       }
@@ -100,7 +100,7 @@ public:
 
     while(!isTerm){
       Node node(count++, sf.node);
-      insertNode( node );
+      addNode( node );
 
       Edge edge(p, stringLen, word1, node.id);
       addEdge(edge);
@@ -220,7 +220,7 @@ public:
     	Edge edge = edges[edgesMap[make_pair(nodeId, *it)]];
     	int span = edge.r - edge.l + 1;
     	if(edge.r == stringLen) span--;
-    	matchAux(edge.noFinal, currentSuffixSize + span, occ);
+    	matchAux(edge.endNode, currentSuffixSize + span, occ);
     }
   }
 
@@ -273,4 +273,4 @@ public:
     return occ;
   }
 
-}
+};

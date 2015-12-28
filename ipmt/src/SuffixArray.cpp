@@ -9,7 +9,7 @@ public:
   char *str;
 
   void csort(int k) {
-    memset(cnt, 0, arraySize * sizeof(int));
+    memset(count, 0, arraySize * sizeof(int));
 
     int index;
     for(int i = 0; i < stringLen; i++) {
@@ -92,7 +92,7 @@ public:
     memset(SA,0, arraySize * sizeof(int));
     memset(tmpRA,0, arraySize * sizeof(int));
     memset(tmpSA,0, arraySize * sizeof(int));
-    memset(cnt,0, arraySize * sizeof(int));
+    memset(count,0, arraySize * sizeof(int));
     memset(str,0, arraySize);
   }
 
@@ -188,4 +188,4 @@ public:
     return occ;
   }
 
-}
+};

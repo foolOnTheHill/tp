@@ -1,7 +1,7 @@
 #include "search.h"
 
 void read(string &filename, string &input) {
-  ifstream ifs(filename);
+  ifstream ifs(filename.c_str());
 
   if (!ifs.good()) {
     printf("Invalid pattern file '%s'!", filename.c_str());
@@ -19,7 +19,7 @@ void read(string &filename, string &input) {
 
 void output(string &filename, string &output) {
   ofstream ofs;
-  ofs.open(filename, ofstream::out | ofstream::trunc);
+  ofs.open(filename.c_str(), ofstream::out | ofstream::trunc);
   ofs << output;
   ofs.close();
 }
@@ -194,11 +194,11 @@ void recoverFromIndex(string &input, string &text, string &repr, char &dataStruc
 }
 
 void printCount(string &textfile, string &pattern, vector<int> occ) {
-  printf("%s: %d occurences for '%s'\n", textfile.c_str(), occ.size(), pattern.c_str());
+  printf("%s: %lu occurences for '%s'\n", textfile.c_str(), occ.size(), pattern.c_str());
 }
 
 void printMatching(string &textfile, string &pattern, vector<int> occ) {
-  for (int j = 0, o = positions.size(); j < o; j++) {
+  for (int j = 0, o = occ.size(); j < o; j++) {
     printf("%s:%d: %s\n", textfile.c_str(), occ[j], pattern.c_str());
   }
 }
@@ -223,13 +223,13 @@ void match(vector<string> &patterns, string &textfile, bool onlyCount) {
     SuffixArray array(text, repr);
     for (string &p : patterns) {
       vector<int> occ = array.match(p);
-      printOccurences(textfile, p, occ);
+      printOccurences(textfile, p, occ, onlyCount);
     }
   } else {
     SuffixTree tree(text, repr);
     for (string &p : patterns) {
       vector<int> occ = tree.match(p);
-      printOccurences(textfile, p, occ);
+      printOccurences(textfile, p, occ, onlyCount);
     }
   }
 }

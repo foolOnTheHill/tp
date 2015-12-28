@@ -48,6 +48,12 @@ vector<string> getFilesName(const char* f) {
 	return files;
 }
 
+void show_usage() {
+  printf("Usage:\n");
+  printf("\tipmt index textfile\n");
+  printf("\tipmt [options] [pattern] textfile [textfile...]\n\n");
+}
+
 void show_help() {
   printf("Indexed Pattern Matching Tool - ipmt\n\n");
   show_usage();
@@ -57,12 +63,6 @@ void show_help() {
 	printf("\t-p, --pattern file\tMakes the matching using each line in 'file' as a pattern\n");
 	printf("\t-c, --count\tOnly prints how many times the patterns matches\n");
 	exit(0);
-}
-
-void show_usage() {
-  printf("Usage:\n");
-  printf("\tipmt index textfile\n");
-  printf("\tipmt [options] [pattern] textfile [textfile...]\n\n");
 }
 
 int main(int argc, char** argv) {
@@ -126,11 +126,12 @@ int main(int argc, char** argv) {
       array = true;
       arg_index += 1;
       break;
-  }
     default:
       show_help();
       break;
     }
+  }
+
 
   if (arg_index >= argc) {
     show_usage();
