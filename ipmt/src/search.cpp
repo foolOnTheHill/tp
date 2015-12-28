@@ -87,7 +87,7 @@ void decompress(string &comp_text, string &ret) {
   ret = dict[prev];
   aux = ret;
 
-  for (int i = 1; i < (int) encode.size(); i++) {
+  for (int i = 1, N = encode.size(); i < N; i++) {
     curr = encode[i];
 
     if (dict.count(curr)) {

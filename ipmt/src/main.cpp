@@ -22,7 +22,7 @@ vector<string> getFilesName(const char* f) {
 		if (ok.good()) {
 			files.push_back(wildcard);
 		} else {
-			// printf("Invalid file: '%s'.\n", f);
+			printf("Invalid file: '%s'.\n", f);
 		}
 
 		return files;
@@ -101,7 +101,9 @@ int main(int argc, char** argv) {
   int option_index = 0;
   int arg_index = 2;
 
-  while ((option = getopt_long(argc, argv, "hp:c:a", long_options, &option_index)) != -1) {
+  while ((option = getopt_long(argc, argv, "hp:a:c", long_options, &option_index)) != -1) {
+    // printf("Option: %c\n", option);
+    // printf("Index: %d\n", arg_index);
     switch(option) {
     case 'h':
       show_help();
@@ -109,10 +111,12 @@ int main(int argc, char** argv) {
     case 'p':
       if (index) {
         show_usage();
+        exit(0);
       }
       multi_pattern = true;
       if (optarg == NULL) {
         show_usage();
+        exit(0);
       }
       patterns_file = optarg;
       arg_index += 2;
@@ -120,11 +124,16 @@ int main(int argc, char** argv) {
     case 'c':
       if (index) {
         show_usage();
+        exit(0);
       }
       only_counting = true;
-      arg_index += 1;
+      // arg_index += 1;
       break;
     case 'a':
+      if (!index) {
+        show_usage();
+        exit(0);
+      }
       array = true;
       arg_index += 1;
       break;
@@ -137,6 +146,7 @@ int main(int argc, char** argv) {
 
   if (arg_index >= argc) {
     show_usage();
+    exit(0);
   }
 
   if (index) {
@@ -153,8 +163,14 @@ int main(int argc, char** argv) {
     if (!multi_pattern) {
 			// printf("Single pattern %s\n", argv[arg_index]);
 			patterns.push_back(argv[arg_index]);
-      arg_index += 1;
+      if (only_counting) {
+        arg_index += 2;
+      } else {
+        arg_index += 1;
+      }
     } else {
+      // printf ("Multi pattern\n");
+
       ifstream patterns_stream(patterns_file);
 
       if (!patterns_stream.good()) {
@@ -181,6 +197,7 @@ int main(int argc, char** argv) {
 
     if (qnt_files == 0) {
       show_usage();
+      exit(0);
     }
 
     for (string &tf : text_files) {

@@ -1,4 +1,4 @@
-FLAGS=-std=c++11 -Wall -Wextra -O2 -w
+FLAGS=-std=c++0x -Wall -Wextra -O2 -w
 
 all: clean makedir ipmt clean
 
