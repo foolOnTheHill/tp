@@ -50,8 +50,8 @@ vector<string> getFilesName(const char* f) {
 
 void show_usage() {
   printf("Usage:\n");
-  printf("\tipmt index textfile\n");
-  printf("\tipmt [options] [pattern] textfile [textfile...]\n\n");
+  printf("\tipmt index [options] textfile\n");
+  printf("\tipmt search [options] [pattern] textfile [textfile...]\n\n");
 }
 
 void show_help() {
