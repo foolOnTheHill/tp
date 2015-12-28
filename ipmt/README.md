@@ -18,9 +18,8 @@ For compression/decompression we use Lempel-Ziv-Welch.
 Usage
 -----
 
-``$ ipmt index textfile``
-``$ ipmt [options] [pattern] textfile [textfile...]``
-
+- Indexation mode: ``$ ipmt index textfile``
+- Search mode: ``$ ipmt [options] [pattern] textfile [textfile...]``
 
 - Options:
   - ``-h, --help`` : shows help.
