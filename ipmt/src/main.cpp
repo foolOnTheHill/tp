@@ -48,15 +48,19 @@ vector<string> getFilesName(const char* f) {
 	return files;
 }
 
-void show_usage() {
+void show_usage(bool shouldExit) {
   printf("Usage:\n");
   printf("\tipmt index [options] textfile\n");
   printf("\tipmt search [options] [pattern] textfile [textfile...]\n\n");
+
+	if (shouldExit) {
+		exit(0);
+	}
 }
 
 void show_help() {
   printf("Indexed Pattern Matching Tool - ipmt\n\n");
-  show_usage();
+  show_usage(false);
   printf("Options:\n");
 	printf("\t-h, --help\tShows this\n");
   printf("\t-a, --array\tIndexes the file using a Suffix Array\n");
@@ -65,146 +69,135 @@ void show_help() {
 	exit(0);
 }
 
+void check(int a, int b) {
+	if (a >= b) {
+		show_usage(true);
+	}
+}
+
+void read_patterns(vector<string> &patterns, string patterns_file) {
+	ifstream ifs(patterns_file);
+
+	if (!ifs.good()) {
+		printf("Invalid file: '%s'.\n", patterns_file.c_str());
+	}
+
+	for (string ln; getline(ifs, ln);) {
+		patterns.push_back(ln);
+	}
+}
+
 int main(int argc, char** argv) {
   bool multi_pattern = false;
   bool only_counting = false;
   bool index;
   bool array = false;
 
-  string patterns_file;
   vector<string> patterns;
   vector<string> text_files;
 
-  static struct option long_options[] = {
-		{ "help", no_argument, 0, 'h' },
-		{ "pattern", required_argument, 0, 'p' },
-		{ "count", no_argument, 0, 'c'},
-    { "array", no_argument, 0, 'a'},
-    { 0, 0, 0, 0 }
-	};
+	string input_file;
 
-	if (argc < 1) {
-		show_help();
+	if (argc < 2) {
+		show_usage(true);
 	}
 
-  if (strcmp(argv[1], "search") == 0) {
-		// printf("Search mode\n");
-    index = false;
-  } else if (strcmp(argv[1], "index") == 0) {
-		// printf("Index mode\n");
+	if (strcmp(argv[1], "search") == 0) {
+		// printf("Search mode.\n");
+		index = false;
+	} else if (strcmp(argv[1], "index") == 0) {
+		// printf("Index mode.\n");
 		index = true;
-  } else {
-    show_help();
-  }
+	} else if (strcmp(argv[1], "-h") == 0) {
+		show_help();
+	} else {
+		show_usage(true);
+	}
 
-  int option;
-  int option_index = 0;
-  int arg_index = 2;
+	int arg_index = 2;
+	bool readCountFlag = false, readPatternsFlag = false, readSinglePattern = false, readArrayFlag = false;
+	while (arg_index < argc) {
+		// printf("Arg: %s\n", argv[arg_index]);
+		if (strcmp(argv[arg_index], "-c") == 0) {
+			if (readCountFlag || index) {
+				show_usage(true);
+			}
 
-  while ((option = getopt_long(argc, argv, "hp:a:c", long_options, &option_index)) != -1) {
-    // printf("Option: %c\n", option);
-    // printf("Index: %d\n", arg_index);
-    switch(option) {
-    case 'h':
-      show_help();
-      break;
-    case 'p':
-      if (index) {
-        show_usage();
-        exit(0);
-      }
-      multi_pattern = true;
-      if (optarg == NULL) {
-        show_usage();
-        exit(0);
-      }
-      patterns_file = optarg;
-      arg_index += 2;
-      break;
-    case 'c':
-      if (index) {
-        show_usage();
-        exit(0);
-      }
-      only_counting = true;
-      // arg_index += 1;
-      break;
-    case 'a':
-      if (!index) {
-        show_usage();
-        exit(0);
-      }
-      array = true;
-      arg_index += 1;
-      break;
-    default:
-      show_help();
-      break;
-    }
-  }
+			only_counting = true;
+			arg_index += 1;
+		} else if (strcmp(argv[arg_index], "-p") == 0) {
+			if (readPatternsFlag || index) {
+				show_usage(true);
+			}
 
+			multi_pattern = true;
+			arg_index += 1;
 
-  if (arg_index >= argc) {
-    show_usage();
-    exit(0);
-  }
+			check(arg_index, argc);
 
-  if (index) {
-		// printf("File to index %s\n", argv[arg_index]);
-    string input_file(argv[arg_index]);
-    if (array) {
-			// printf("Using suffix array.\n");
-      generateIndexArray(input_file);
-    } else {
-			// printf("Using suffix tree.\n");
-      generateIndexTree(input_file);
-    }
-  } else {
-    if (!multi_pattern) {
-			// printf("Single pattern %s\n", argv[arg_index]);
-			patterns.push_back(argv[arg_index]);
-      if (only_counting) {
-        arg_index += 2;
-      } else {
-        arg_index += 1;
-      }
-    } else {
-      // printf ("Multi pattern\n");
+			string patterns_file(argv[arg_index]);
+			read_patterns(patterns, patterns_file);
+			arg_index += 1;
 
-      ifstream patterns_stream(patterns_file);
+			readPatternsFlag = true;
+		} else if (strcmp(argv[arg_index], "-a") == 0) {
+			if (!index || readArrayFlag) {
+				show_usage(true);
+			}
+			readArrayFlag = true;
+			array = true;
+			arg_index += 1;
+		} else {
+			if (index) {
+				input_file = argv[arg_index];
+			} else if (!readPatternsFlag) {
+				string single_pattern(argv[arg_index]);
+				patterns.push_back(single_pattern);
+				readSinglePattern = true;
+				arg_index += 1;
+			}
+			break;
+		}
+	}
 
-      if (!patterns_stream.good()) {
-        printf("Invalid file: '%s'.\n", patterns_file.c_str());
-      }
+	if (arg_index > argc) {
+		show_usage(true);
+	}
 
-      for(string text; getline(patterns_stream, text); ) {
-        patterns.push_back(text);
-      }
-    }
+	if(index) {
+		if (array) {
+			generateIndexArray(input_file);
+		} else {
+			generateIndexTree(input_file);
+		}
+	} else {
 
-    int qnt_files = 0, tmp;
-    for (int i = arg_index; i < argc; i++) {
-      vector<string> files_name = getFilesName(argv[i]);
+		bool hasPattern = readPatternsFlag || readSinglePattern;
+		if (!hasPattern) {
+			show_usage(true);
+		}
 
-      tmp = files_name.size();
+		int qnt_files = 0, tmp;
+		for (int i = arg_index; i < argc; i++) {
+			vector<string> files_name = getFilesName(argv[i]);
 
-      for (unsigned int i = 0; i < tmp; i++) {
-        text_files.push_back(files_name.at(i));
-      }
+			tmp = files_name.size();
 
-      qnt_files += tmp;
-    }
+			for (unsigned int i = 0; i < tmp; i++) {
+				text_files.push_back(files_name.at(i));
+			}
 
-    if (qnt_files == 0) {
-      show_usage();
-      exit(0);
-    }
+			qnt_files += tmp;
+		}
 
-    for (string &tf : text_files) {
-			// printf("Searching on text file %s\n", tf.c_str());
-      match(patterns, tf, only_counting);
-    }
-  }
+		if (qnt_files == 0) {
+			show_usage(true);
+		} else {
+			for (string &file : text_files) {
+				match(patterns, file, only_counting);
+			}
+		}
+	}
 
   return 0;
 }

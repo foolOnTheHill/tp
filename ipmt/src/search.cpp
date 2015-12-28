@@ -6,7 +6,7 @@ void read(string &filename, string &input) {
   ifstream ifs(filename.c_str());
 
   if (!ifs.good()) {
-    printf("Invalid pattern file '%s'!", filename.c_str());
+    printf("Invalid pattern file '%s'!\n", filename.c_str());
     exit(1);
   }
 
