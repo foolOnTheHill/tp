@@ -42,7 +42,7 @@ vector<string> getFilesName(const char* f) {
 		}
 		closedir(dp);
 	} else {
-		// printf("Invalid path: '%s'.\n", path.c_str());
+		printf("Invalid path: '%s'.\n", path.c_str());
 	}
 
 	return files;
@@ -103,10 +103,8 @@ int main(int argc, char** argv) {
 	}
 
 	if (strcmp(argv[1], "search") == 0) {
-		// printf("Search mode.\n");
 		index = false;
 	} else if (strcmp(argv[1], "index") == 0) {
-		// printf("Index mode.\n");
 		index = true;
 	} else if (strcmp(argv[1], "-h") == 0) {
 		show_help();
@@ -117,7 +115,6 @@ int main(int argc, char** argv) {
 	int arg_index = 2;
 	bool readCountFlag = false, readPatternsFlag = false, readSinglePattern = false, readArrayFlag = false;
 	while (arg_index < argc) {
-		// printf("Arg: %s\n", argv[arg_index]);
 		if (strcmp(argv[arg_index], "-c") == 0) {
 			if (readCountFlag || index) {
 				show_usage(true);

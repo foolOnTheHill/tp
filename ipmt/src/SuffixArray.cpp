@@ -1,4 +1,11 @@
-#include <bits/stdc++.h>
+#include <stdio.h>
+#include <string>
+#include <string.h>
+#include <vector>
+#include <map>
+#include <list>
+#include <sstream>
+#include <algorithm>
 
 using namespace std;
 
@@ -76,12 +83,9 @@ public:
   }
 
   void init(string &word) {
-    // printf("Initializing some variables.\n");
-
     stringLen = word.size();
     arraySize = (2 * stringLen) + 400;
 
-    // printf("Creating the arrays.\n");
     RA = new int[arraySize];
     SA = new int[arraySize];
     tmpRA = new int[arraySize];
@@ -89,16 +93,13 @@ public:
     count = new int[arraySize];
     str = new char[arraySize];
 
-    // printf("Copying the string.\n");
     strncpy(str, word.c_str(), stringLen);
 
-    // printf("Initializing the arrays.\n");
     memset(RA,0, arraySize * sizeof(int));
     memset(SA,0, arraySize * sizeof(int));
     memset(tmpRA,0, arraySize * sizeof(int));
     memset(tmpSA,0, arraySize * sizeof(int));
     memset(count,0, arraySize * sizeof(int));
-    // memset(str,0, arraySize);
   }
 
   void getRepr(string &buffer) {
@@ -127,7 +128,6 @@ public:
   }
 
   SuffixArray(string &word) {
-    // printf("Creating the Suffix Array.\n");
     init(word);
     prepareSA();
   }

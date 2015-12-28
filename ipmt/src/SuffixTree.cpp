@@ -1,4 +1,11 @@
-#include <bits/stdc++.h>
+#include <stdio.h>
+#include <string>
+#include <string.h>
+#include <vector>
+#include <map>
+#include <list>
+#include <sstream>
+#include <algorithm>
 
 using namespace std;
 
