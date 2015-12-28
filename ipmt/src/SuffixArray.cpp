@@ -98,7 +98,7 @@ public:
     memset(tmpRA,0, arraySize * sizeof(int));
     memset(tmpSA,0, arraySize * sizeof(int));
     memset(count,0, arraySize * sizeof(int));
-    memset(str,0, arraySize);
+    // memset(str,0, arraySize);
   }
 
   void getRepr(string &buffer) {
