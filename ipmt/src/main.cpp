@@ -22,7 +22,7 @@ vector<string> getFilesName(const char* f) {
 		if (ok.good()) {
 			files.push_back(wildcard);
 		} else {
-			printf("Invalid file: '%s'.\n", f);
+			// printf("Invalid file: '%s'.\n", f);
 		}
 
 		return files;
@@ -42,7 +42,7 @@ vector<string> getFilesName(const char* f) {
 		}
 		closedir(dp);
 	} else {
-		printf("Invalid path: '%s'.\n", path.c_str());
+		// printf("Invalid path: '%s'.\n", path.c_str());
 	}
 
 	return files;

@@ -210,7 +210,6 @@ public:
 
   void matchAux(int nodeId, int currentSuffixSize, vector<int> &occ) {
     if(outEdges[nodeId].size() == 0){
-      // printf("Match!\n");
     	occ.push_back(stringLen - currentSuffixSize);
     }
 
