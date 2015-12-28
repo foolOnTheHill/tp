@@ -48,7 +48,8 @@ void compress(const string &text, string &ret) {
       aux = tmp;
     } else {
       comp_text.push_back(dict[aux]);
-      dict[tmp] = dict.size() + 1;
+      int s = dict.size() + 1;
+      dict[tmp] = s;
       aux = chr;
     }
   }
@@ -86,7 +87,7 @@ void decompress(string &comp_text, string &ret) {
   ret = dict[prev];
   aux = ret;
 
-  for (int i = 1; i < encode.size(); i++) {
+  for (int i = 1; i < (int) encode.size(); i++) {
     curr = encode[i];
 
     if (dict.count(curr)) {
@@ -252,3 +253,17 @@ void match(vector<string> &patterns, string &textfile, bool onlyCount) {
     }
   }
 }
+
+// int main() {
+//   string text("All in all it's just another brick in the wall.");
+//   string encoded;
+//   string recovered;
+
+//   compress(text, encoded);
+//   decompress(encoded, recovered);
+
+//   printf("%s\n", text.c_str());
+//   printf("%s\n", recovered.c_str());
+
+//   return 0;
+// }
