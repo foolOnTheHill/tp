@@ -139,9 +139,21 @@ void printOccurences(string &textfile, string &pattern, vector<int> occ, bool on
   }
 }
 
+void getFileExtension(string filename, string &extension) {
+  int id = filename.rfind(".");
+  extension = filename.substr(id+1, filename.length());
+}
+
 void match(vector<string> &patterns, string &textfile, bool onlyCount) {
   string encoding, input, text, repr;
   char structure;
+
+  string extension;
+  getFileExtension(textfile, extension);
+  if (strcmp(extension.c_str(), "idx") != 0) {
+    printf("Invalid index file '%s'.\n", textfile.c_str());
+    exit(1);
+  }
 
   read(textfile, encoding);
   decompress(encoding, input);
