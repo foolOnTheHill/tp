@@ -223,7 +223,7 @@ public:
 
   void matchAux(int nodeId, int currentSuffixSize, vector<int> &occ) {
     if(outEdges[nodeId].size() == 0){
-    	occ.push_back(stringLen - currentSuffixSize);
+    	occ.push_back((int) (stringLen - currentSuffixSize));
     }
 
     list<char> &currentNodeEdges = outEdges[nodeId];

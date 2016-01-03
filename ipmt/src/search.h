@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "lzw.h"
+#include "lz77.h"
 #include "SuffixTree.cpp"
 #include "SuffixArray.cpp"
 
@@ -17,8 +18,8 @@ using namespace std;
 
 #define ALPHABET_SIZE 256
 
-void generateIndexTree(string &textfile);
-void generateIndexArray(string &textfile);
+void generateIndexTree(string &textfile, const string compressAlg);
+void generateIndexArray(string &textfile, const string compressAlg);
 void match(vector<string> &patterns, string &textfile, bool onlyCount);
 
 #endif

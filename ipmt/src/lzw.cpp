@@ -1,8 +1,8 @@
 #include "lzw.h"
 
-void compress(const string &text, string &ret) {
+void compress_lzw(const string &text, string &ret) {
   vector<int> comp_text;
-  map<string, int> dict;
+  unordered_map<string, int> dict;
 
   for (int i = 0; i < ALPHABET_SIZE; i++) {
     dict[string(1, i)] = i;
@@ -10,6 +10,8 @@ void compress(const string &text, string &ret) {
 
   string aux = "";
   char chr;
+
+  int dictSize = ALPHABET_SIZE;
 
   for (int i = 0; i < text.length(); i++) {
     chr = text[i];
@@ -20,8 +22,9 @@ void compress(const string &text, string &ret) {
       aux = tmp;
     } else {
       comp_text.push_back(dict[aux]);
-      int s = dict.size() + 1;
-      dict[tmp] = s;
+      // int s = dict.size() + 1;
+      dictSize += 1;
+      dict[tmp] = dictSize;
       aux = chr;
     }
   }
@@ -31,23 +34,23 @@ void compress(const string &text, string &ret) {
   }
 
   ostringstream os;
-	vector<int>::iterator it;
-	for (it = comp_text.begin() ; it != comp_text.end(); ++it) {
-		os << *it << '\n';
-	}
-	ret = os.str();
+  vector<int>::iterator it;
+  for (it = comp_text.begin() ; it != comp_text.end(); ++it) {
+    os << *it << '\n';
+  }
+  ret = "LZW\n"+os.str();
 }
 
-void decompress(string &comp_text, string &ret) {
+void decompress_lzw(string &comp_text, string &ret) {
   vector<int> encode;
 
-	int tmp;
-	stringstream ss(comp_text);
-	while ( ss >> tmp ) {
-		encode.push_back(tmp);
-	}
+  int tmp;
+  stringstream ss(comp_text);
+  while ( ss >> tmp ) {
+    encode.push_back(tmp);
+  }
 
-  map<int, string> dict;
+  unordered_map<int, string> dict;
   for (int i = 0; i < ALPHABET_SIZE; i++) {
     dict[i] = string(1, i);
   }
@@ -59,7 +62,9 @@ void decompress(string &comp_text, string &ret) {
   ret = dict[prev];
   aux = ret;
 
-  for (int i = 1, N = encode.size(); i < N; i++) {
+  int dictSize = ALPHABET_SIZE;
+
+  for (int i = 1; i < (int) encode.size(); i++) {
     curr = encode[i];
 
     if (dict.count(curr)) {
@@ -69,10 +74,25 @@ void decompress(string &comp_text, string &ret) {
     }
     ret += ipt;
 
-    int s = dict.size() + 1;
-    dict[s] = aux + ipt[0];
+    // int s = dict.size() + 1;
+    dictSize += 1;
+    dict[dictSize] = aux + ipt[0];
 
     prev = curr;
     aux = ipt;
   }
 }
+//
+// int main() {
+//   string text = "All in all it's just another brick in the wall.";
+//   string cmp, dcmp;
+//   compress(text, cmp);
+//   decompress(cmp, dcmp);
+//   printf("%s\n%s\n", text.c_str(), dcmp.c_str());
+//   // if (strcmp(text, dcmp) != 0) {
+//   //   printf("Wrong comp/decomp.\n");
+//   // } else {
+//   //   printf("All right!\n");
+//   // }
+//   return 0;
+// }

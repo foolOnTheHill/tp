@@ -27,11 +27,11 @@ public:
       count[index]++;
     }
 
-    for(int i = 1; i < max(stringLen, 300); i++) {
+    for(int i = 1; i < max(stringLen, (int) 300); i++) {
       count[i] += count[i - 1];
     }
 
-    for (int i = max(stringLen, 300); i >= 1; i--) {
+    for (int i = max(stringLen, (int) 300); i >= 1; i--) {
       count[i] = count[i-1];
     }
 

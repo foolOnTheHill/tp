@@ -11,6 +11,7 @@ void read(string &filename, string &input) {
     exit(1);
   }
 
+  // printf("Reading file.\n");
   string ln;
   while (getline(ifs, ln)) {
     ln += '\n';
@@ -18,6 +19,7 @@ void read(string &filename, string &input) {
   }
 
   input = input.substr(0, input.length()-1);
+  // printf("Finished reading file.\n");
 }
 
 void output(string &filename, string &output) {
@@ -27,18 +29,47 @@ void output(string &filename, string &output) {
   ofs.close();
 }
 
+void handle_compression(string &textfile, string &encoding, string compressAlg) {
+  if (compressAlg.compare("lzw") == 0) {
+    compress_lzw(textfile, encoding);
+  } else if (compressAlg.compare("lz77") == 0) {
+    compress_lz77(textfile, encoding);
+  } else {
+    printf("Invalid compression algorithm '%s'.\n", compressAlg.c_str());
+    exit(1);
+  }
+}
+
+void handle_decompression(string &encoding, string &decode) {
+  string compressAlg = encoding.substr(0, 3);
+  encoding = encoding.substr(3, encoding.length());
+
+  // printf("File was compressed using '%s'.\n", compressAlg.c_str());
+
+  if (compressAlg.compare("LZW") == 0) {
+    decompress_lzw(encoding, decode);
+  } else if (compressAlg.compare("LZ7") == 0) {
+    decompress_lz77(encoding, decode);
+  } else {
+    printf("Invalid compression algorithm '%s'.\n", compressAlg.c_str());
+    exit(1);
+  }
+}
+
 void getIndexFileName(string &textfile, string &indexfile) {
   int id = textfile.rfind(".");
   indexfile = textfile.substr(0, id);
   indexfile += ".idx";
 }
 
-void generateIndexTree(string &textfile) {
+void generateIndexTree(string &textfile, const string compressAlg) {
   string input, treeRepr, indexRepr, encoding, indexFileName;
 
   read(textfile, input);
 
+  // printf("Generating tree\n");
   SuffixTree tree(input);
+  // printf("Generating repr\n");
   tree.getRepr(treeRepr);
 
   ostringstream os;
@@ -48,7 +79,9 @@ void generateIndexTree(string &textfile) {
   os << treeRepr;
   indexRepr = os.str();
 
-  compress(indexRepr, encoding);
+  // printf("Compressing\n");
+  handle_compression(treeRepr, encoding, compressAlg);
+  // printf("Done!\n");
 
   getIndexFileName(textfile, indexFileName);
 
@@ -57,13 +90,14 @@ void generateIndexTree(string &textfile) {
   exit(0);
 }
 
-void generateIndexArray(string &textfile) {
+void generateIndexArray(string &textfile, const string compressAlg) {
   string input, arrayRepr, indexRepr, encoding, indexFileName;
 
   read(textfile, input);
 
+  // printf("Generating array\n");
   SuffixArray array(input);
-
+  // printf("Generating repr\n");
   array.getRepr(arrayRepr);
 
   ostringstream os;
@@ -73,7 +107,9 @@ void generateIndexArray(string &textfile) {
   os << arrayRepr;
   indexRepr = os.str();
 
-  compress(indexRepr, encoding);
+  // printf("Compressing\n");
+  handle_compression(indexRepr, encoding, compressAlg);
+  // printf("Done!\n");
 
   getIndexFileName(textfile, indexFileName);
 
@@ -156,7 +192,9 @@ void match(vector<string> &patterns, string &textfile, bool onlyCount) {
   }
 
   read(textfile, encoding);
-  decompress(encoding, input);
+
+  handle_decompression(encoding, input);
+
   recoverFromIndex(input, text, repr, structure);
 
   if (structure == 'A') {

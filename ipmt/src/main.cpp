@@ -66,6 +66,8 @@ void show_help() {
   printf("\t-a, --array\tIndexes the file using a Suffix Array\n");
 	printf("\t-p, --pattern \tMakes the matching using each line in 'file' as a pattern\n");
 	printf("\t-c, --count\tOnly prints how many times the patterns matches\n");
+	printf("\t-compress=lz77 \tUses LZ77 to compress the index file\n");
+	printf("\t-compress=lzw \tUses LZW to compress the index file\n");
 	exit(0);
 }
 
@@ -113,7 +115,8 @@ int main(int argc, char** argv) {
 	}
 
 	int arg_index = 2;
-	bool readCountFlag = false, readPatternsFlag = false, readSinglePattern = false, readArrayFlag = false;
+	bool readCountFlag = false, readPatternsFlag = false, readSinglePattern = false, readArrayFlag = false, readCompressFlag = false;
+	string alg = "lzw";
 	while (arg_index < argc) {
 		if (strcmp(argv[arg_index], "-c") == 0) {
 			if (readCountFlag || index) {
@@ -137,6 +140,20 @@ int main(int argc, char** argv) {
 			arg_index += 1;
 
 			readPatternsFlag = true;
+		} else if (strcmp(argv[arg_index], "-compress=lzw") == 0) {
+			if (!index || readCompressFlag) {
+				show_usage(true);
+			}
+			alg = "lzw";
+			arg_index += 1;
+			readCompressFlag = true;
+		} else if (strcmp(argv[arg_index], "-compress=lz77") == 0) {
+			if (!index || readCompressFlag) {
+				show_usage(true);
+			}
+			alg = "lz77";
+			arg_index += 1;
+			readCompressFlag = true;
 		} else if (strcmp(argv[arg_index], "-a") == 0) {
 			if (!index || readArrayFlag) {
 				show_usage(true);
@@ -163,9 +180,9 @@ int main(int argc, char** argv) {
 
 	if(index) {
 		if (array) {
-			generateIndexArray(input_file);
+			generateIndexArray(input_file, alg);
 		} else {
-			generateIndexTree(input_file);
+			generateIndexTree(input_file, alg);
 		}
 	} else {
 
