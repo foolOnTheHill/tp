@@ -26,6 +26,8 @@ Usage
   - ``-p, --pattern file`` : makes the matching using each line in 'file' as a pattern.
   - ``-c, --count`` : only shows how many times the pattern matches.
   - ``-a, --array`` : uses a Suffix Array as the representation.
+  - ``-compress=lz77`` : uses LZ77 to compress the index file.
+  - ``-compress=lzw`` : uses LZW to compress the index file.
 
 - We also offer support to wildcards at the textfile parameter.
 
