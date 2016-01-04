@@ -68,11 +68,17 @@ def generate_patterns(filename):
         myfile.close()
     return patterns
 
-def generate_indexes(f, array):
+def generate_indexes(f, array, compress='lzw'):
     if array:
-        cmd = ['./ipmt', 'index', f]
+        cmd = ['./ipmt', 'index']
     else:
-        cmd = ['./ipmt', 'index', '-a', f]
+        cmd = ['./ipmt', 'index', '-a']
+
+    if compress == 'lz77':
+        cmd.append('-compress-=lz77')
+
+    cmd.append(f)
+
     r = run_and_get_output(cmd)
     time = r[0]
     return time
@@ -103,23 +109,23 @@ def run():
     pf.close()
     print 'Done!'
 
-    print 'Generating tree index...'
+    print 'LZW: Generating tree index...'
     timeIndexTree = generate_indexes(filenameTree, False)
     print 'Done! in %f ms' % timeIndexTree
 
-    print 'Generating array index...'
+    print 'LZW: Generating array index...'
     timeIndexArray = generate_indexes(filenameArray, True)
     print 'Done! in %f ms' % timeIndexArray
 
-    print 'Searching using tree...'
+    print 'LZW: Searching using tree...'
     timeSearchTree = search(filenameTree[:len(filenameTree)-1]+'idx', patterns, False)
     print 'Done!'
 
-    print 'Searching using array...'
+    print 'LZW: Searching using array...'
     timeSearchArray = search(filenameArray[:len(filenameArray)-1]+'idx', patterns, False)
     print 'Done!'
 
-    print 'Searching using grep...'
+    print 'LZW: Searching using grep...'
     timeSearchGrep = search(filenameTree, patterns, True)
     print 'Done!'
 
@@ -137,7 +143,7 @@ def run():
             timeSearchArray[:25]
         )
     }
-    plot(dataTo70, 'normal')
+    plot(dataTo70, 'normal-lzw')
 
     dataSmall = {
         'grep' : (
@@ -153,7 +159,7 @@ def run():
             timeSearchArray[:12]
         )
     }
-    plot(dataSmall, 'pequenos')
+    plot(dataSmall, 'pequenos-lzw')
 
     dataBig = {
         'grep' : (
@@ -169,7 +175,75 @@ def run():
             timeSearchArray[26:]
         )
     }
-    plot(dataBig, 'grandes')
+    plot(dataBig, 'grandes-lzw')
+
+    print 'LZ77: Generating tree index...'
+    timeIndexTree = generate_indexes(filenameTree, False, compress="lz77")
+    print 'Done! in %f ms' % timeIndexTree
+
+    print 'LZ77: Generating array index...'
+    timeIndexArray = generate_indexes(filenameArray, True, compress="lz77")
+    print 'Done! in %f ms' % timeIndexArray
+
+    print 'LZ77: Searching using tree...'
+    timeSearchTree = search(filenameTree[:len(filenameTree)-1]+'idx', patterns, False)
+    print 'Done!'
+
+    print 'LZ77: Searching using array...'
+    timeSearchArray = search(filenameArray[:len(filenameArray)-1]+'idx', patterns, False)
+    print 'Done!'
+
+    print 'LZ77: Searching using grep...'
+    timeSearchGrep = search(filenameTree, patterns, True)
+    print 'Done!'
+
+    dataTo70 = {
+        'grep' : (
+            sizes[:25],
+            timeSearchGrep[:25]
+        ),
+        'tree' : (
+            sizes[:25],
+            timeSearchTree[:25]
+        ),
+        'array' : (
+            sizes[:25],
+            timeSearchArray[:25]
+        )
+    }
+    plot(dataTo70, 'normal-lz77')
+
+    dataSmall = {
+        'grep' : (
+            sizes[:12],
+            timeSearchGrep[:12]
+        ),
+        'tree' : (
+            sizes[:12],
+            timeSearchTree[:12]
+        ),
+        'array' : (
+            sizes[:12],
+            timeSearchArray[:12]
+        )
+    }
+    plot(dataSmall, 'pequenos-lz77')
+
+    dataBig = {
+        'grep' : (
+            sizes[26:],
+            timeSearchGrep[26:]
+        ),
+        'tree' : (
+            sizes[26:],
+            timeSearchTree[26:]
+        ),
+        'array' : (
+            sizes[26:],
+            timeSearchArray[26:]
+        )
+    }
+    plot(dataBig, 'grandes-lz77')
 
 if __name__ == '__main__':
     # run_and_get_output(['./ipmt', 'index', '-a', 'desolation-row.txt'])
