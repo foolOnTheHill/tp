@@ -1,0 +1,178 @@
+import os
+import subprocess
+import tempfile
+import time
+import random
+import re
+
+import matplotlib.pyplot as plt
+from numpy import pi, sin, linspace
+from matplotlib.mlab import stineman_interp
+import matplotlib.collections as mcol
+from matplotlib.lines import Line2D
+
+random.seed(42)
+
+def plot(data, figname) :
+    fig, ax = plt.subplots()
+
+    colors = ['blue', 'green', 'black', 'yellow', 'red', 'orange']
+    styles = ['dashed', 'solid', 'dashed', 'dashed', 'dashed', 'solid']
+    algs = []
+    i = 0
+    maxY = -1
+    for a in data :
+        algs.append(a)
+
+        x = data[a][0]
+        y = data[a][1]
+        yp = None
+
+        ax.plot(x, y, linestyle='ro', marker='o', c=colors[i], ls=styles[i], label=a)
+
+        maxY = max(maxY, max(y))
+
+        i += 1
+
+    plt.ylabel('running time (ms)')
+    plt.xlabel('pattern length')
+    plt.axis([min(data['grep'][0]), max(data['grep'][0])+5, 0, maxY+1])
+
+    legend = plt.legend(loc='upper right', shadow=True, fontsize='medium',)
+
+    plt.savefig(figname)
+    # plt.show()
+    plt.clf()
+
+def run_and_get_output(cmd, getOutput=False):
+    with tempfile.TemporaryFile() as tempf:
+        start_time = time.clock()
+        proc = subprocess.Popen(cmd, stdout=tempf)
+        proc.wait()
+        rn_time = (time.clock() - start_time)*1000 # Running time in ms
+        tempf.seek(0)
+        r = (rn_time, '' if getOutput else tempf.readlines())
+        tempf.close()
+        return r
+
+def generate_patterns(filename):
+    patterns = []
+    sizes = [1, 2, 3, 4, 5, 6, 8, 10, 12, 14, 15, 16, 20, 23, 26, 30, 32, 37, 40, 42, 48, 50, 52, 60, 70, 80, 83, 83, 90, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700]
+    with open(filename, 'r') as myfile:
+        text=myfile.read()
+        length = len(text)
+        for s in sizes:
+            i = random.randint(0, length-s)
+            p = text[i:i+s]
+            patterns.append(p)
+        myfile.close()
+    return patterns
+
+def generate_indexes(f, array):
+    if array:
+        cmd = ['./ipmt', 'index', f]
+    else:
+        cmd = ['./ipmt', 'index', '-a', f]
+    r = run_and_get_output(cmd)
+    time = r[0]
+    return time
+
+def search(filename, patterns, grep):
+    times = []
+    for p in patterns:
+        if not grep:
+            cmd = ['./ipmt', 'search', '-c', filename]
+        else:
+            cmd = ['grep', '-c', p, filename]
+        t = run_and_get_output(cmd)
+        times.append(t[0])
+    return times
+
+def run():
+    filenameTree = 'english30-tree.txt'
+    filenameArray = 'english30-array.txt'
+
+    print 'Generating random patterns...'
+    patterns = generate_patterns(filenameTree)
+
+    sizes = [1, 2, 3, 4, 5, 6, 8, 10, 12, 14, 15, 16, 20, 23, 26, 30, 32, 37, 40, 42, 48, 50, 52, 60, 70, 80, 83, 83, 90, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700]
+
+    pf = open('patterns.txt', 'w')
+    for p in patterns:
+        pf.write(p.replace('\n', ' ')+'\n')
+    pf.close()
+    print 'Done!'
+
+    print 'Generating tree index...'
+    timeIndexTree = generate_indexes(filenameTree, False)
+    print 'Done! in %f ms' % timeIndexTree
+
+    print 'Generating array index...'
+    timeIndexArray = generate_indexes(filenameArray, True)
+    print 'Done! in %f ms' % timeIndexArray
+
+    print 'Searching using tree...'
+    timeSearchTree = search(filenameTree[:len(filenameTree)-1]+'idx', patterns, False)
+    print 'Done!'
+
+    print 'Searching using array...'
+    timeSearchArray = search(filenameArray[:len(filenameArray)-1]+'idx', patterns, False)
+    print 'Done!'
+
+    print 'Searching using grep...'
+    timeSearchGrep = search(filenameTree, patterns, True)
+    print 'Done!'
+
+    dataTo70 = {
+        'grep' : (
+            sizes[:25],
+            timeSearchGrep[:25]
+        ),
+        'tree' : (
+            sizes[:25],
+            timeSearchTree[:25]
+        ),
+        'array' : (
+            sizes[:25],
+            timeSearchArray[:25]
+        )
+    }
+    plot(dataTo70, 'normal')
+
+    dataSmall = {
+        'grep' : (
+            sizes[:12],
+            timeSearchGrep[:12]
+        ),
+        'tree' : (
+            sizes[:12],
+            timeSearchTree[:12]
+        ),
+        'array' : (
+            sizes[:12],
+            timeSearchArray[:12]
+        )
+    }
+    plot(dataSmall, 'pequenos')
+
+    dataBig = {
+        'grep' : (
+            sizes[26:],
+            timeSearchGrep[26:]
+        ),
+        'tree' : (
+            sizes[26:],
+            timeSearchTree[26:]
+        ),
+        'array' : (
+            sizes[26:],
+            timeSearchArray[26:]
+        )
+    }
+    plot(dataBig, 'grandes')
+
+if __name__ == '__main__':
+    # run_and_get_output(['./ipmt', 'index', '-a', 'desolation-row.txt'])
+    # print run_and_get_output(['./ipmt', 'search', 'the', 'desolation-row.idx'])
+    # print os.path.getsize('english-tree.txt')
+    run()
