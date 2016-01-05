@@ -37,15 +37,17 @@ void generateIndexTree(string &textfile, const string compressAlg) {
 
   read(textfile, input);
 
-  SuffixTree tree(input);
-  tree.getRepr(treeRepr);
+  {
+    SuffixTree tree(input);
+    tree.getRepr(treeRepr);
 
-  ostringstream os;
-  os << input.size() << '\n';
-  os << treeRepr.size() << '\n';
-  os << input;
-  os << treeRepr;
-  indexRepr = os.str();
+    ostringstream os;
+    os << input.size() << '\n';
+    os << treeRepr.size() << '\n';
+    os << input;
+    os << treeRepr;
+    indexRepr = os.str();
+  }
 
   getIndexFileName(textfile, indexFileName);
 
@@ -60,15 +62,17 @@ void generateIndexArray(string &textfile, const string compressAlg) {
 
   read(textfile, input);
 
-  SuffixArray array(input);
-  array.getRepr(arrayRepr);
+  {
+    SuffixArray array(input);
+    array.getRepr(arrayRepr);
 
-  ostringstream os;
-  os << input.size() << '\n';
-  os << (-1) * ((int) arrayRepr.size()) << '\n';
-  os << input;
-  os << arrayRepr;
-  indexRepr = os.str();
+    ostringstream os;
+    os << input.size() << '\n';
+    os << (-1) * ((int) arrayRepr.size()) << '\n';
+    os << input;
+    os << arrayRepr;
+    indexRepr = os.str();
+  }
 
   getIndexFileName(textfile, indexFileName);
 
@@ -141,9 +145,9 @@ void getFileExtension(string filename, string &extension) {
 }
 
 void match(vector<string> &patterns, string &textfile, bool onlyCount) {
-  string encoding, input, text, repr;
+  string encoding, text, repr;
   char structure;
-
+  
   string extension;
   getFileExtension(textfile, extension);
   if (strcmp(extension.c_str(), "idx") != 0) {
@@ -151,9 +155,11 @@ void match(vector<string> &patterns, string &textfile, bool onlyCount) {
     exit(1);
   }
 
-  handle_decompression(textfile, input);
-
-  recoverFromIndex(input, text, repr, structure);
+  {
+    string input;
+    handle_decompression(textfile, input);
+    recoverFromIndex(input, text, repr, structure);
+  }
 
   if (structure == 'A') {
     SuffixArray array(text, repr);
