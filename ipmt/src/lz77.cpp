@@ -1,7 +1,10 @@
 #include "lz77.h"
 
-void compress_lz77(const string &text, string &ret) {
-  vector<int> comp_text;
+void compress_lz77(const string &text, string &comp_file) {
+  ofstream ofs;
+  ofs.open(comp_file.c_str(), ofstream::out | ofstream::trunc);
+
+  ofs << "LZ7";
 
   int len = text.length();
   int i = 0;
@@ -36,44 +39,42 @@ void compress_lz77(const string &text, string &ret) {
 
     i += size + 1;
 
-    comp_text.push_back(pos);
-    comp_text.push_back(size);
-    comp_text.push_back(static_cast<int>(literal));
+    ofs << pos << '\n';
+    ofs << size << '\n';
+    ofs << static_cast<int>(literal) << '\n';
   }
 
-  ostringstream os;
-  vector<int>::iterator it;
-  for (it = comp_text.begin() ; it != comp_text.end(); ++it) {
-    os << *it << '\n';
-  }
-  ret = "LZ7" + os.str();
+  ofs.close();
 }
 
-void decompress_lz77(string &comp_text, string &ret) {
-  vector<tuple<int, int, char>> encode;
+void decompress_lz77(string &comp_file, string &ret) {
+  ifstream ifs(comp_file.c_str());
 
-  int p, s, l;
-
-  stringstream ss(comp_text);
-  while ( ss >> p ) {
-    ss >> s;
-    ss >> l;
-    encode.push_back(make_tuple(p, s, static_cast<char>(l)));
+  if (!ifs.good()) {
+    printf("Invalid pattern file '%s'!\n", comp_file.c_str());
+    exit(1);
   }
+
+  char aux;
+  ifs >> aux;
+  ifs >> aux;
+  ifs >> aux;
 
   ret = "";
 
-  int pos, size;
+  int pos, size, tmp;
   char literal;
-  for (int i = 0; i < (int) encode.size(); i++) {
-    pos = get<0>(encode[i]);
-    size = get<1>(encode[i]);
-    literal = get<2>(encode[i]);
+  while(ifs >> pos) {
+    ifs >> size;
+    ifs >> tmp;
+
+    literal = static_cast<char>(tmp);
 
     int p = ret.length() - pos;
     ret += ret.substr(p, size) + literal;
   }
 
+  ifs.close();
 }
 
 // int main() {

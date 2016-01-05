@@ -7,8 +7,7 @@
 #include <fstream>
 #include <vector>
 
-#include "lzw.h"
-#include "lz77.h"
+#include "compress.h"
 #include "SuffixTree.cpp"
 #include "SuffixArray.cpp"
 

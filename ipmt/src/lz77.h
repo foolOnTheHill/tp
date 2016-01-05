@@ -6,6 +6,7 @@
 #include <string.h>
 #include <vector>
 #include <tuple>
+#include <fstream>
 #include <sstream>
 
 #define ALPHABET_SIZE 256
@@ -14,7 +15,7 @@
 
 using namespace std;
 
-void compress_lz77(const string &text, string &ret);
-void decompress_lz77(string &comp_text, string &ret);
+void compress_lz77(const string &text, string &comp_file);
+void decompress_lz77(string &comp_file, string &ret);
 
 #endif

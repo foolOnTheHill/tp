@@ -1,8 +1,12 @@
 #include "lzw.h"
 
-void compress_lzw(const string &text, string &ret) {
-  vector<int> comp_text;
+void compress_lzw(const string &text, string &comp_file) {
   unordered_map<string, int> dict;
+
+  ofstream ofs;
+  ofs.open(comp_file.c_str(), ofstream::out | ofstream::trunc);
+
+  ofs << "LZW";
 
   for (int i = 0; i < ALPHABET_SIZE; i++) {
     dict[string(1, i)] = i;
@@ -21,8 +25,8 @@ void compress_lzw(const string &text, string &ret) {
     if (dict.count(tmp)) {
       aux = tmp;
     } else {
-      comp_text.push_back(dict[aux]);
-      // int s = dict.size() + 1;
+      ofs << dict[aux] << '\n';
+
       dictSize += 1;
       dict[tmp] = dictSize;
       aux = chr;
@@ -30,25 +34,24 @@ void compress_lzw(const string &text, string &ret) {
   }
 
   if (!aux.empty()) {
-    comp_text.push_back(dict[aux]);
+    ofs << dict[aux] << '\n';
   }
 
-  ostringstream os;
-  vector<int>::iterator it;
-  for (it = comp_text.begin() ; it != comp_text.end(); ++it) {
-    os << *it << '\n';
-  }
-  ret = "LZW\n"+os.str();
+  ofs.close();
 }
 
-void decompress_lzw(string &comp_text, string &ret) {
-  vector<int> encode;
+void decompress_lzw(string &comp_file, string &ret) {
+  ifstream ifs(comp_file.c_str());
 
-  int tmp;
-  stringstream ss(comp_text);
-  while ( ss >> tmp ) {
-    encode.push_back(tmp);
+  if (!ifs.good()) {
+    printf("Invalid pattern file '%s'!\n", comp_file.c_str());
+    exit(1);
   }
+
+  char c_aux;
+  ifs >> c_aux;
+  ifs >> c_aux;
+  ifs >> c_aux;
 
   unordered_map<int, string> dict;
   for (int i = 0; i < ALPHABET_SIZE; i++) {
@@ -58,15 +61,13 @@ void decompress_lzw(string &comp_text, string &ret) {
   int prev, curr;
   string ipt, aux;
 
-  prev = encode[0];
+  ifs >> prev;
   ret = dict[prev];
   aux = ret;
 
   int dictSize = ALPHABET_SIZE;
 
-  for (int i = 1; i < (int) encode.size(); i++) {
-    curr = encode[i];
-
+  while(ifs >> curr) {
     if (dict.count(curr)) {
       ipt = dict[curr];
     } else {
@@ -74,13 +75,14 @@ void decompress_lzw(string &comp_text, string &ret) {
     }
     ret += ipt;
 
-    // int s = dict.size() + 1;
     dictSize += 1;
     dict[dictSize] = aux + ipt[0];
 
     prev = curr;
     aux = ipt;
   }
+
+  ifs.close();
 }
 //
 // int main() {
