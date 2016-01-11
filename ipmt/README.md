@@ -20,7 +20,7 @@ For compression/decompression we use:
 Usage
 -----
 
-- Indexation mode: ``$ ipmt index [options] textfile``
+Indexation mode: ``$ ipmt index [options] textfile``
 
 - Options:
   - ``-a`` : uses a Suffix Array as the representation.
@@ -28,13 +28,13 @@ Usage
   - ``-compress=lz77`` : uses LZ77 to compress the index file.
   - ``-compress=lzw`` : uses LZW to compress the index file.
 
-- Search mode: ``$ ipmt search [options] [pattern] textfile [textfile...]``
+Search mode: ``$ ipmt search [options] [pattern] textfile [textfile...]``
 
 - Options:
   - ``-p file`` : makes the matching using each line in 'file' as a pattern.
   - ``-c`` : only shows how many times the pattern matches.
 
-  - ``-h`` : shows help.
+- ``-h`` : shows help.
 
 - We also offer support to wildcards at the textfile parameter.
 
