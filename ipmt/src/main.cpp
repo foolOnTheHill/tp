@@ -59,15 +59,18 @@ void show_usage(bool shouldExit) {
 }
 
 void show_help() {
-  printf("Indexed Pattern Matching Tool - ipmt\n\n");
+  printf("\nIndexed Pattern Matching Tool - ipmt\n\n");
   show_usage(false);
   printf("Options:\n");
-	printf("\t-h, --help\tShows this\n");
-  printf("\t-a, --array\tIndexes the file using a Suffix Array\n");
-	printf("\t-p, --pattern \tMakes the matching using each line in 'file' as a pattern\n");
-	printf("\t-c, --count\tOnly prints how many times the patterns matches\n");
-	printf("\t-compress=lz77 \tUses LZ77 to compress the index file\n");
-	printf("\t-compress=lzw \tUses LZW to compress the index file\n");
+	printf("\t-h\t\tShows this\n\n");
+	printf("- Indexation options:\n");
+  printf("\t-a\t\tIndexes the file using a Suffix Array (enabled by default)\n");
+	printf("\t-t\t\tIndexes the file using a Suffix Tree\n");
+	printf("\t-compress=lzw \tUses LZW to compress the index file (enabled by default)\n");
+	printf("\t-compress=lz77 \tUses LZ77 to compress the index file\n\n");
+	printf("- Search options:\n");
+	printf("\t-p file\t\tMakes the matching using each line in 'file' as a pattern\n");
+	printf("\t-c\t\tOnly prints how many times the patterns matches\n\n");
 	exit(0);
 }
 
@@ -93,7 +96,7 @@ int main(int argc, char** argv) {
   bool multi_pattern = false;
   bool only_counting = false;
   bool index;
-  bool array = false;
+  bool array = true;
 
   vector<string> patterns;
   vector<string> text_files;
@@ -160,6 +163,13 @@ int main(int argc, char** argv) {
 			}
 			readArrayFlag = true;
 			array = true;
+			arg_index += 1;
+		} else if (strcmp(argv[arg_index], "-t") == 0) {
+			if (!index || readArrayFlag) {
+				show_usage(true);
+			}
+			readArrayFlag = true;
+			array = false;
 			arg_index += 1;
 		} else {
 			if (index) {

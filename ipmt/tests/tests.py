@@ -36,24 +36,21 @@ def plot(data, figname) :
 
     plt.ylabel('running time (ms)')
     plt.xlabel('pattern length')
-    plt.axis([min(data['grep'][0]), max(data['grep'][0])+5, 0, maxY+1])
 
-    legend = plt.legend(loc='upper right', shadow=True, fontsize='medium',)
+    legend = plt.legend(loc='upper right', shadow=True)
 
     plt.savefig(figname)
     # plt.show()
     plt.clf()
 
-def run_and_get_output(cmd, getOutput=False):
-    with tempfile.TemporaryFile() as tempf:
-        start_time = time.clock()
-        proc = subprocess.Popen(cmd, stdout=tempf)
-        proc.wait()
-        rn_time = (time.clock() - start_time)*1000 # Running time in ms
-        tempf.seek(0)
-        r = (rn_time, '' if getOutput else tempf.readlines())
-        tempf.close()
-        return r
+def run_and_get_output(cmd):
+    f = tempfile.TemporaryFile()
+    start_time = time.time()
+    proc = subprocess.Popen(cmd, stdout=f)
+    proc.wait()
+    rn_time = (time.time() - start_time)*1000 # Running time in ms
+    r = (rn_time, '')
+    return r
 
 def generate_patterns(filename):
     patterns = []
@@ -69,13 +66,13 @@ def generate_patterns(filename):
     return patterns
 
 def generate_indexes(f, array, compress='lzw'):
-    if array:
+    if not array:
         cmd = ['./ipmt', 'index']
     else:
         cmd = ['./ipmt', 'index', '-a']
 
     if compress == 'lz77':
-        cmd.append('-compress-=lz77')
+        cmd.append('-compress=lz77')
 
     cmd.append(f)
 
@@ -86,8 +83,9 @@ def generate_indexes(f, array, compress='lzw'):
 def search(filename, patterns, grep):
     times = []
     for p in patterns:
+        print len(p)
         if not grep:
-            cmd = ['./ipmt', 'search', '-c', filename]
+            cmd = ['./ipmt', 'search', '-c', p, filename]
         else:
             cmd = ['grep', '-c', p, filename]
         t = run_and_get_output(cmd)
@@ -95,8 +93,8 @@ def search(filename, patterns, grep):
     return times
 
 def run():
-    filenameTree = 'english30-tree.txt'
-    filenameArray = 'english30-array.txt'
+    filenameTree = 'english5-tree.txt'
+    filenameArray = 'english5-array.txt'
 
     print 'Generating random patterns...'
     patterns = generate_patterns(filenameTree)
@@ -118,11 +116,11 @@ def run():
     print 'Done! in %f ms' % timeIndexArray
 
     print 'LZW: Searching using tree...'
-    timeSearchTree = search(filenameTree[:len(filenameTree)-1]+'idx', patterns, False)
+    timeSearchTree = search(filenameTree[:len(filenameTree)-3]+'idx', patterns, False)
     print 'Done!'
 
     print 'LZW: Searching using array...'
-    timeSearchArray = search(filenameArray[:len(filenameArray)-1]+'idx', patterns, False)
+    timeSearchArray = search(filenameArray[:len(filenameArray)-3]+'idx', patterns, False)
     print 'Done!'
 
     print 'LZW: Searching using grep...'
@@ -186,11 +184,11 @@ def run():
     print 'Done! in %f ms' % timeIndexArray
 
     print 'LZ77: Searching using tree...'
-    timeSearchTree = search(filenameTree[:len(filenameTree)-1]+'idx', patterns, False)
+    timeSearchTree = search(filenameTree[:len(filenameTree)-3]+'idx', patterns, False)
     print 'Done!'
 
     print 'LZ77: Searching using array...'
-    timeSearchArray = search(filenameArray[:len(filenameArray)-1]+'idx', patterns, False)
+    timeSearchArray = search(filenameArray[:len(filenameArray)-3]+'idx', patterns, False)
     print 'Done!'
 
     print 'LZ77: Searching using grep...'

@@ -215,11 +215,11 @@ public:
     loadRepr(buffer);
   }
 
-  ~SuffixTree() {
-    delete[] nodes;
-    delete[] edges;
-    delete[] outEdges;
-  }
+  // ~SuffixTree() {
+  //   delete[] nodes;
+  //   delete[] edges;
+  //   delete[] outEdges;
+  // }
 
   void matchAux(int nodeId, int currentSuffixSize, vector<int> &occ) {
     if(outEdges[nodeId].size() == 0){

@@ -137,14 +137,14 @@ public:
     loadRepr(buffer);
   }
 
-  ~SuffixArray() {
-    delete[] RA;
-    delete[] SA;
-    delete[] tmpRA;
-    delete[] tmpSA;
-    delete[] count;
-    delete[] str;
-  }
+  // ~SuffixArray() {
+  //   delete[] RA;
+  //   delete[] SA;
+  //   delete[] tmpRA;
+  //   delete[] tmpSA;
+  //   delete[] count;
+  //   delete[] str;
+  // }
 
   vector<int> match(string &pattern) {
     vector<int> occ;
